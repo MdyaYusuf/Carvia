@@ -1,0 +1,26 @@
+﻿@model ErrorViewModel
+@{
+  ViewData["Title"] = "Error";
+}
+
+<div class="max-w-2xl mx-auto mt-12 p-8 bg-white border border-gray-200 rounded-lg shadow-sm">
+  <h1 class="text-3xl font-bold text-red-600 mb-4">Error.</h1>
+  <h2 class="text-xl font-semibold text-slate-800 mb-6">An error occurred while processing your request.</h2>
+
+  @if (Model.ShowRequestId)
+  {
+    <p class="bg-slate-100 p-3 rounded font-mono text-sm mb-6">
+      <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+  }
+
+  <div class="space-y-4 text-slate-600 text-sm">
+    <h3 class="font-bold text-slate-900">Development Mode</h3>
+    <p>
+      Swapping to <strong>Development</strong> environment will display more detailed information.
+    </p>
+    <p class="bg-amber-50 border-l-4 border-amber-400 p-4 italic">
+      The Development environment shouldn't be enabled for deployed applications as it can leak sensitive information.
+    </p>
+  </div>
+</div>
