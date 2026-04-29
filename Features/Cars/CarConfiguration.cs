@@ -24,32 +24,43 @@ public class CarConfiguration : IEntityTypeConfiguration<Car>
       .IsRequired(false);
 
     builder.Property(c => c.Make)
-      .HasColumnName("Make")
       .HasMaxLength(100)
       .IsRequired();
 
     builder.Property(c => c.Model)
-      .HasColumnName("Model")
       .HasMaxLength(100)
       .IsRequired();
 
     builder.Property(c => c.Year)
-      .HasColumnName("Year")
       .IsRequired();
 
     builder.Property(c => c.Price)
-      .HasColumnName("Price")
       .HasPrecision(18, 2)
       .IsRequired();
 
     builder.Property(c => c.ImageUrl)
-      .HasColumnName("ImageUrl")
       .HasMaxLength(500)
       .IsRequired();
 
     builder.Property(c => c.Description)
-      .HasColumnName("Description")
       .HasMaxLength(2000)
       .IsRequired();
+
+    builder.HasOne(c => c.Category)
+      .WithMany(cat => cat.Cars)
+      .HasForeignKey(c => c.CategoryId)
+      .OnDelete(DeleteBehavior.Restrict);
+
+    builder.HasMany(c => c.Images)
+      .WithOne(i => i.Car)
+      .HasForeignKey(i => i.CarId)
+      .OnDelete(DeleteBehavior.Cascade);
+
+    builder.HasMany(c => c.CuratorItems)
+      .WithOne(ci => ci.Car)
+      .HasForeignKey(ci => ci.CarId)
+      .OnDelete(DeleteBehavior.Cascade);
+
+    builder.HasIndex(c => c.Make);
   }
 }
