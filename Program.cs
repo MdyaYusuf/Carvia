@@ -1,4 +1,9 @@
 using Carvia.Common;
+using Carvia.Features.CarImages;
+using Carvia.Features.Cars;
+using Carvia.Features.Categories;
+using Carvia.Features.CuratorItems;
+using Carvia.Features.Users;
 using Carvia.Infrastructure.Contexts;
 using Carvia.Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,6 +17,12 @@ builder.Services.AddDbContext<BaseDbContext>(options =>
 {
   options.UseSqlite(connectionString);
 });
+
+builder.Services.AddCarDependencies();
+builder.Services.AddCarImageDependencies();
+builder.Services.AddCategoryDependencies();
+builder.Services.AddCuratorItemDependencies();
+builder.Services.AddUserDependencies();
 
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<RazorViewEngineOptions>(options =>
