@@ -1,0 +1,41 @@
+﻿using Carvia.Core.Exceptions;
+using Carvia.Core.Utilities.Security;
+using Carvia.Features.Users;
+
+namespace Carvia.Features.Authentication;
+
+public class AuthenticationBusinessRules
+{
+  public void UserCredentialsMustMatch(
+    User? user,
+    string password)
+  {
+    if (user == null || !HashingHelper.VerifyPasswordHash(password, user.PasswordHash, user.PasswordKey))
+    {
+      throw new BusinessException("E-posta adresi veya şifre hatalı.");
+    }
+
+    if (!user.IsActive)
+    {
+      throw new BusinessException("Hesabınız pasif durumdadır. Lütfen yönetici ile iletişime geçin.");
+    }
+  }
+
+  public void RefreshTokenMustBeValid(
+    User? user)
+  {
+    if (user == null || user.RefreshTokenExpiration < DateTime.Now)
+    {
+      throw new AuthorizationException("Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.");
+    }
+  }
+
+  public void RefreshTokenUserMustExist(
+    User? user)
+  {
+    if (user == null)
+    {
+      throw new NotFoundException("Oturum bilgisi bulunamadı.");
+    }
+  }
+}
