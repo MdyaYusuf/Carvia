@@ -27,11 +27,6 @@ public interface IUserService
     bool enableTracking = false,
     CancellationToken cancellationToken = default);
 
-  Task<ReturnModel<CreatedUserViewModel>> AddAsync(
-    CreateUserViewModel request,
-    string userRole,
-    CancellationToken cancellationToken = default);
-
   Task<ReturnModel<NoData>> RemoveAsync(
     Guid id,
     string userRole,

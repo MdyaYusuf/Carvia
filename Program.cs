@@ -1,4 +1,5 @@
 using Carvia.Common;
+using Carvia.Core.Models;
 using Carvia.Features.CarImages;
 using Carvia.Features.Cars;
 using Carvia.Features.Categories;
@@ -7,8 +8,11 @@ using Carvia.Features.Users;
 using Carvia.Infrastructure.Contexts;
 using Carvia.Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,16 +37,38 @@ builder.Services.Configure<RazorViewEngineOptions>(options =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-  .AddCookie(options =>
+builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection("TokenOptions"));
+
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");
+
+builder.Services.AddAuthentication(options =>
+{
+  options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+  options.LoginPath = "/Account/Login";
+  options.LogoutPath = "/Account/Logout";
+  options.Cookie.HttpOnly = true;
+  options.Cookie.SameSite = SameSiteMode.Strict;
+  options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+  options.ExpireTimeSpan = TimeSpan.FromDays(7);
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+  options.TokenValidationParameters = new TokenValidationParameters
   {
-    options.LoginPath = "/Account/Login";
-    options.LogoutPath = "/Account/Logout";
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SameSite = SameSiteMode.Strict;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-  });
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidateLifetime = true,
+    ValidIssuer = tokenOptions.Issuer,
+    ValidAudience = tokenOptions.Audience,
+    ValidateIssuerSigningKey = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
+    ClockSkew = TimeSpan.Zero
+  };
+});
 
 var app = builder.Build();
 
