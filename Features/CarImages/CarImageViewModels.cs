@@ -38,7 +38,7 @@ public class UpdateCarImageViewModel
 {
   public Guid Id { get; set; }
   [Required, StringLength(500)]
-  public string Url { get; set; } = null!;
+  public string ExistingImageUrl { get; set; } = null!;
   [StringLength(200)]
   public string? AltText { get; set; }
   [Required]

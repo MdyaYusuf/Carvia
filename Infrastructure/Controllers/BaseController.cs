@@ -1,12 +1,23 @@
 ﻿using Carvia.Core.Exceptions;
 using Carvia.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 
 namespace Carvia.Infrastructure.Controllers;
 
 public abstract class BaseController : Controller
 {
+  public override void OnActionExecuting(ActionExecutingContext context)
+  {
+    if (TempData["ErrorMessage"] != null)
+    {
+      ModelState.AddModelError(string.Empty, TempData["ErrorMessage"]!.ToString()!);
+    }
+
+    base.OnActionExecuting(context);
+  }
+
   [NonAction]
   public IActionResult CreateActionResult<T>(ReturnModel<T> result)
   {
