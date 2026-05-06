@@ -1,0 +1,84 @@
+﻿@using Carvia.Features.CuratorItems
+@model IEnumerable<ShowcaseCuratorItemViewModel>
+@{
+  ViewData["Title"] = "Curator Mode - Archives";
+  ViewData["IsHeroPage"] = false; // Uses the standard 1440px container
+}
+
+<!-- Header Section -->
+<div class="mb-20 border-b border-outline-variant pb-8">
+  <h2 class="font-mono text-[11px] font-bold text-acid-mint uppercase tracking-[1.9px] mb-2">
+    Your Saved Visions
+  </h2>
+  <h1 class="font-display text-[107px] font-extrabold text-white uppercase leading-[100px] tracking-[-0.04em]">
+    Curator Mode
+  </h1>
+</div>
+
+<!-- Archives Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  @foreach (var item in Model)
+  {
+    @* Logic: "Vision" or "Prototype" models get the saturated Acid Mint background *@
+    bool isVision = item.CarModel.Contains("Vision") || item.CarModel.Contains("Prototype");
+
+    <div class="group relative rounded-[40px] border @(isVision ? "border-acid-mint bg-acid-mint" : "border-outline-variant bg-surface") transition-colors duration-300 overflow-hidden flex flex-col">
+            
+      @if (isVision)
+      {
+        <!-- Decorative Hazard Strike for Highlight Tiles -->
+        <div class="absolute top-6 right-6 z-10 flex flex-col gap-1">
+          <div class="w-1 h-8 bg-background"></div>
+          <div class="w-1 h-4 bg-background"></div>
+        </div>
+      }
+
+      <!-- Technical Image Frame -->
+      <div class="p-1 border-b @(isVision ? "border-background/20" : "border-outline-variant")">
+        <div class="relative w-full aspect-video rounded-[4px] border @(isVision ? "border-background/20" : "border-outline-variant") overflow-hidden">
+          <img src="@item.CarImageUrl" alt="@item.CarMake"
+               class="w-full h-full object-cover @(isVision ? "mix-blend-multiply opacity-90" : "")" />
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="p-8 flex flex-col flex-grow @(isVision ? "text-background" : "text-white")">
+        <h3 class="font-display text-2xl font-bold mb-1 uppercase tracking-tight">
+          @item.CarMake @item.CarModel
+        </h3>
+                
+        @if (!string.IsNullOrEmpty(item.UserNote))
+        {
+          <p class="font-body text-xs mt-2 opacity-80 line-clamp-2 italic">
+            "@item.UserNote"
+          </p>
+        }
+
+        <div class="h-[1px] w-full @(isVision ? "bg-background/20" : "bg-outline-variant") my-6"></div>
+                
+        <div class="flex flex-col gap-4">
+          <div class="flex justify-between items-center py-1 border-b @(isVision ? "border-background/20" : "border-outline-variant")">
+            <span class="font-mono text-[10px] font-bold uppercase opacity-60 tracking-widest">ID Reference</span>
+            <span class="font-mono text-[10px] font-bold">@item.Id.ToString().Substring(0, 8)</span>
+          </div>
+        </div>
+
+        <!-- Action Layer -->
+        <div class="mt-auto pt-8 flex gap-4">
+          <a asp-controller="Cars" asp-action="Details" asp-route-id="@item.CarId"
+             class="flex-1 py-3 px-4 rounded-full border @(isVision ? "border-background text-background" : "border-white text-white") font-mono text-[10px] font-bold uppercase text-center hover:bg-white hover:text-background transition-colors tracking-widest">
+            View
+          </a>
+                    
+          <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="flex-1">
+            @Html.AntiForgeryToken()
+            <button type="submit"
+                    class="w-full py-3 px-4 rounded-full border @(isVision ? "border-background text-background" : "border-secondary-container text-secondary-container") font-mono text-[10px] font-bold uppercase hover:bg-secondary-container hover:text-white transition-colors tracking-widest">
+              Remove
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>

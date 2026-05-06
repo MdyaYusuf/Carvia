@@ -22,6 +22,16 @@ public class CarsController(
   }
 
   [HttpGet]
+  public async Task<IActionResult> Showcase(CancellationToken cancellationToken)
+  {
+    var result = await _carService.GetAllAsync(
+      userRole: GetUserRole(),
+      cancellationToken: cancellationToken);
+
+    return View(result.Data);
+  }
+
+  [HttpGet]
   public async Task<IActionResult> Details(
     Guid id,
     CancellationToken cancellationToken)

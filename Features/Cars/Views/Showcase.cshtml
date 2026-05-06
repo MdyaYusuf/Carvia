@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ShowcaseCarViewModel>
+@{
+  ViewData["Title"] = "The Timeline";
+  ViewData["IsHeroPage"] = false;
+}
+
+<div class="relative flex gap-10">
+  <!-- Left Spine: Decorative Timeline -->
+  <aside class="hidden lg:flex w-16 flex-col items-center border-r border-outline-variant pt-20 relative">
+    <div class="sticky top-40 h-[calc(100vh-200px)] flex flex-col items-center">
+      <div class="h-full border-l border-dashed border-outline-variant relative">
+        <div class="absolute top-0 -left-[5px] w-[9px] h-[9px] rounded-full bg-acid-mint"></div>
+        <!-- Hazard Dots -->
+        <div class="absolute top-1/4 -left-[5px] w-[9px] h-[9px] rounded-full bg-outline-variant"></div>
+        <div class="absolute top-2/4 -left-[5px] w-[9px] h-[9px] rounded-full bg-outline-variant"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Feed Content -->
+  <div class="flex-1 max-w-4xl space-y-12 pb-20">
+    <div class="flex space-x-6 border-b border-outline-variant pb-4 mb-8">
+      <button class="font-mono text-[11px] font-bold text-acid-mint tracking-[1.9px] uppercase">ALL MODELS</button>
+      <button class="font-mono text-[11px] font-bold text-on-surface-variant hover:text-white transition-colors tracking-[1.9px] uppercase">PROTOTYPES</button>
+    </div>
+
+    @foreach (var car in Model)
+    {
+      <article class="group relative bg-surface border border-outline-variant rounded-[40px] overflow-hidden hover:border-acid-mint transition-colors duration-300">
+        <div class="absolute top-6 left-6 z-10 w-1 h-6 bg-acid-mint"></div>
+        <div class="p-6">
+          <div class="border border-outline-variant rounded p-1 mb-6">
+            <img src="@car.ImageUrl" class="w-full aspect-video object-cover rounded" alt="@car.Make @car.Model" />
+          </div>
+          <div class="px-2">
+            <p class="font-mono text-[11px] font-bold text-on-surface-variant mb-2 uppercase tracking-[1.9px]">@car.Year • @car.Make</p>
+            <h2 class="font-display text-3xl font-bold text-white group-hover:text-acid-mint transition-colors">@car.Model</h2>
+            <div class="mt-6 border-t border-outline-variant pt-4">
+              <a href="/Cars/Details/@car.Id" class="font-mono text-[11px] font-bold text-acid-mint tracking-[1.9px]">EXPLORE SPECS</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+</div>

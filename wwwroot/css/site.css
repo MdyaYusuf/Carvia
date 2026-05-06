@@ -1,5 +1,28 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1e293b;
+  /* Colors - Near black foundation with high visibility accents */
+  --color-background: #0d1512;
+  --color-surface: #0d1512;
+  --color-primary: #ffffff;
+  --color-acid-mint: #00e0b4; /* Primary signal color */
+  --color-ultraviolet: #5200ff; /* Secondary vibration color */
+  --color-deep-blue: #3860be; /* Reserved for hover states */
+  --color-outline-variant: #3b4a44;
+  /* Typography - Extreme scale variance */
+  --font-display: "Epilogue", sans-serif;
+  --font-body: "Be Vietnam Pro", sans-serif;
+  --font-mono: "Space Grotesk", monospace;
+  /* Specific Design System Spacing */
+  --spacing-section-gap: 80px;
+  --spacing-container-max: 1440px;
+  /* Border Radius - Heavy rounding for containers, sharp for inserts */
+  --radius-pill: 40px;
+  --radius-technical: 4px;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-white font-body antialiased selection:bg-acid-mint selection:text-background;
+  }
 }

@@ -1,0 +1,59 @@
+﻿@using Carvia.Features.Authentication
+@model RegisterUserViewModel
+@{
+  ViewData["Title"] = "Join the Stream";
+  ViewData["IsHeroPage"] = false; // Uses the standard layout container with padding
+}
+
+<div class="w-full max-w-md mx-auto flex flex-col items-center text-center">
+  <!-- Hero Header -->
+  <h1 class="font-display text-[107px] font-extrabold text-white mb-4 leading-[100px] tracking-[-0.04em] uppercase">
+    Join the Stream
+  </h1>
+  <p class="font-body text-lg font-light text-on-surface-variant mb-12">
+    Start curating your personal vision collection.
+  </p>
+
+  <!-- Registration Form -->
+  <form asp-action="Register" method="POST" class="w-full flex flex-col gap-6">
+    @Html.AntiForgeryToken()
+
+    <div class="flex flex-col text-left gap-2">
+      <label asp-for="Username" class="font-mono text-[11px] font-bold text-on-surface-variant uppercase tracking-[1.9px]">Username</label>
+      <input asp-for="Username" class="bg-background border border-white rounded-[2px] px-4 py-3 font-body text-sm text-white focus:outline-none focus:border-acid-mint focus:ring-1 focus:ring-acid-mint transition-colors" />
+      <span asp-validation-for="Username" class="text-error text-xs font-mono uppercase tracking-tighter"></span>
+    </div>
+
+    <div class="flex flex-col text-left gap-2">
+      <label asp-for="Email" class="font-mono text-[11px] font-bold text-on-surface-variant uppercase tracking-[1.9px]">Email Address</label>
+      <input asp-for="Email" class="bg-background border border-white rounded-[2px] px-4 py-3 font-body text-sm text-white focus:outline-none focus:border-acid-mint focus:ring-1 focus:ring-acid-mint transition-colors" />
+      <span asp-validation-for="Email" class="text-error text-xs font-mono uppercase tracking-tighter"></span>
+    </div>
+
+    <div class="flex flex-col text-left gap-2">
+      <label asp-for="Password" class="font-mono text-[11px] font-bold text-on-surface-variant uppercase tracking-[1.9px]">Password</label>
+      <input asp-for="Password" class="bg-background border border-white rounded-[2px] px-4 py-3 font-body text-sm text-white focus:outline-none focus:border-acid-mint focus:ring-1 focus:ring-acid-mint transition-colors" />
+      <span asp-validation-for="Password" class="text-error text-xs font-mono uppercase tracking-tighter"></span>
+    </div>
+
+    <div class="flex flex-col text-left gap-2">
+      <label asp-for="ConfirmPassword" class="font-mono text-[11px] font-bold text-on-surface-variant uppercase tracking-[1.9px]">Confirm Password</label>
+      <input asp-for="ConfirmPassword" class="bg-background border border-white rounded-[2px] px-4 py-3 font-body text-sm text-white focus:outline-none focus:border-acid-mint focus:ring-1 focus:ring-acid-mint transition-colors" />
+      <span asp-validation-for="ConfirmPassword" class="text-error text-xs font-mono uppercase tracking-tighter"></span>
+    </div>
+
+    <!-- Primary Action Button -->
+    <button type="submit" class="mt-8 w-full bg-acid-mint text-background font-mono text-[12px] font-bold uppercase py-4 rounded-[20px] hover:bg-white transition-colors duration-300 tracking-[1.5px]">
+      Create Account
+    </button>
+  </form>
+
+  <!-- Toggle Link -->
+  <a asp-action="Login" class="mt-8 font-mono text-[11px] font-bold text-on-surface-variant hover:text-acid-mint transition-colors duration-200 tracking-[1.9px]">
+    ALREADY HAVE AN ACCOUNT? LOGIN
+  </a>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

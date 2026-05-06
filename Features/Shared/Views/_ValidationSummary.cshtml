@@ -1,0 +1,19 @@
+﻿<!-- System Alert / Validation Summary -->
+@if (!ViewData.ModelState.IsValid)
+{
+  <div class="mb-8 border-l-4 border-acid-mint bg-surface-container-high p-6 animate-pulse">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-2 h-2 bg-acid-mint rotate-45"></div>
+      <span class="font-mono text-[11px] font-bold text-acid-mint uppercase tracking-[1.9px]">System Alert: Protocol Violation</span>
+    </div>
+    <div asp-validation-summary="All" class="text-white font-body text-sm list-none space-y-1 opacity-90"></div>
+  </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+  <div class="mb-8 border border-error bg-error-container/10 p-6">
+    <p class="font-mono text-[11px] font-bold text-error uppercase tracking-[1.9px]">Critical Error</p>
+    <p class="text-white font-body text-sm mt-2">@TempData["ErrorMessage"]</p>
+  </div>
+}

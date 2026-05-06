@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - CARVIA MANUKA</title>
+  
+  <!-- Branding Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700&family=Epilogue:wght@700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="~/css/app.css" />
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-acid-mint selection:text-background overflow-x-hidden font-body">
+
+  <!-- Persistent Global Navigation -->
+  <partial name="_Navbar" />
+
+  <main class="min-h-screen">
+    @if (ViewData["IsHeroPage"] as bool? == true)
+    {
+      @* Full-screen hero sections render outside the container *@
+      @RenderBody()
+    }
+    else
+    {
+      @* Standard pages utilize the 1440px grid and Hazard Buffer *@
+      <div class="pt-40 pb-20 px-12 max-w-[1440px] mx-auto">
+        <partial name="_ValidationSummary" />
+        @RenderBody()
+      </div>
+    }
+  </main>
+
+  <!-- Editorial Footer -->
+  <partial name="_Footer" />
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

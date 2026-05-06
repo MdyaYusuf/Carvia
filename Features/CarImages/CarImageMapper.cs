@@ -55,7 +55,7 @@ public class CarImageMapper
     UpdateCarImageViewModel viewModel,
     CarImage carImage)
   {
-    carImage.Url = viewModel.Url;
+    carImage.Url = viewModel.ExistingImageUrl;
     carImage.AltText = viewModel.AltText;
     carImage.DisplayOrder = viewModel.DisplayOrder;
     carImage.CarId = viewModel.CarId;

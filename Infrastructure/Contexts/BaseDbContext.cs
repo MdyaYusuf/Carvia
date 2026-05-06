@@ -1,4 +1,8 @@
-﻿using Carvia.Features.Cars;
+﻿using Carvia.Features.CarImages;
+using Carvia.Features.Cars;
+using Carvia.Features.Categories;
+using Carvia.Features.CuratorItems;
+using Carvia.Features.Users;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -11,6 +15,10 @@ public class BaseDbContext : DbContext
   }
 
   public DbSet<Car> Cars { get; set; }
+  public DbSet<Category> Categories { get; set; }
+  public DbSet<CarImage> CarImages { get; set; }
+  public DbSet<CuratorItem> CuratorItems { get; set; }
+  public DbSet<User> Users { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {

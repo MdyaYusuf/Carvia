@@ -1,39 +1,37 @@
-using Carvia.Common;
 using Carvia.Core.Models;
+using Carvia.Features.Authentication;
 using Carvia.Features.CarImages;
 using Carvia.Features.Cars;
 using Carvia.Features.Categories;
 using Carvia.Features.CuratorItems;
 using Carvia.Features.Users;
-using Carvia.Infrastructure.Contexts;
+using Carvia.Infrastructure.Data;
 using Carvia.Infrastructure.Middlewares;
+using Carvia.Infrastructure.Razor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("SQLiteConnection");
-builder.Services.AddDbContext<BaseDbContext>(options =>
-{
-  options.UseSqlite(connectionString);
-});
-
+builder.Services.AddDataDependencies(builder.Configuration);
 builder.Services.AddCarDependencies();
 builder.Services.AddCarImageDependencies();
 builder.Services.AddCategoryDependencies();
 builder.Services.AddCuratorItemDependencies();
 builder.Services.AddUserDependencies();
+builder.Services.AddAuthenticationDependencies();
 
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
+  options.ViewLocationExpanders.Clear();
   options.ViewLocationExpanders.Add(new FeatureViewLocationExpander());
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 

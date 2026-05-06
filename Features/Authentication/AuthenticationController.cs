@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Carvia.Features.Authentication;
 
-public class AccountController(
+public class AuthenticationController(
   IAuthenticationService _authService) : BaseController
 {
   [HttpGet]

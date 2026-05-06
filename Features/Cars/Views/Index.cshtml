@@ -1,0 +1,32 @@
+﻿@model List<ShowcaseCarViewModel>
+@{
+  ViewData["Title"] = "Bringing Visions into Reality";
+  ViewData["IsHeroPage"] = true;
+}
+
+<!-- Hero Section -->
+<main class="relative w-full h-screen flex flex-col justify-end pb-24 px-12 z-0 group">
+  <div class="absolute inset-0 z-[-1] border border-outline-variant bg-cover bg-center"
+       style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3JcNeu6GlVYa44OyAc1oh4lmtnp-qU-LBDe485Qkee3NVnQvzhPRRwaCZ_X6Kx2wO7qJ4pLx4zO76l1uGwipKuBOOZbuuk6K8-z3OuRGu0rKBbBYBMUjGPCyRsjRH__HlJh-hbybOLcU6eBCuJwLOibuXVIq4TdYUHZ02BdF7xSwsPqhaDrtBwtxFX653fmLLQJNMS4xSOe0Ae9MtKH-c1-xu0eTGAIyUxxD12cuAO17mUYhonXJxYZ9jF4qM04K55YyOmSFQ4bM');">
+    <!-- Gradient overlay for readability -->
+    <div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
+  </div>
+
+  <div class="max-w-[1440px] mx-auto w-full z-10 flex flex-col items-start gap-4">
+    <div class="flex items-center gap-3">
+      <!-- 4px Hazard Accent -->
+      <div class="w-1 h-1 bg-acid-mint rounded-sm"></div>
+      <p class="font-mono text-[11px] font-bold text-acid-mint uppercase tracking-[1.9px]">A NEW ERA OF ENGINEERING</p>
+    </div>
+    
+    <h1 class="font-display text-[107px] font-extrabold text-white max-w-5xl leading-[100px] tracking-[-0.04em]">
+      Bringing visions into reality.
+    </h1>
+
+    <div class="mt-8 flex gap-6">
+      <a asp-action="Showcase" class="rounded-full border border-acid-mint px-8 py-4 font-mono text-[12px] font-bold text-acid-mint hover:bg-acid-mint hover:text-background transition-colors duration-300 tracking-[1.5px] inline-block text-center">
+        EXPLORE SHOWCASE
+      </a>
+    </div>
+  </div>
+</main>
