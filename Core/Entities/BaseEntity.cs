@@ -8,7 +8,7 @@ public abstract class BaseEntity<TId> where TId : notnull
   protected BaseEntity()
   {
     Id = default!;
-    CreatedDate = DateTime.UtcNow;
+    CreatedDate = DateTime.Now;
   }
 
   [SetsRequiredMembers]

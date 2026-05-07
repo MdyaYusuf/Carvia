@@ -17,7 +17,8 @@ public class UserMapper
     return new ShowcaseUserViewModel(
       user.Id,
       user.Username,
-      user.ProfileImageUrl);
+      user.ProfileImageUrl,
+      user.Role?.Name);
   }
 
   public List<ShowcaseUserViewModel> EntityToShowcaseViewModelList(
@@ -37,6 +38,7 @@ public class UserMapper
       ProfileImageUrl = user.ProfileImageUrl,
       Bio = user.Bio,
       IsActive = user.IsActive,
+      RoleName = user.Role?.Name,
       CuratorItemCount = user.CuratorItems?.Count ?? 0
     };
   }

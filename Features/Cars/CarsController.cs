@@ -46,11 +46,11 @@ public class CarsController(
 
   [HttpGet]
   [Authorize(Roles = "Admin")]
-  public async Task<IActionResult> Create(
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Create(CancellationToken ct)
   {
     var viewModel = new CreateCarViewModel();
-    await PopulateCategoriesAsync(viewModel, cancellationToken);
+
+    await PopulateCategoriesAsync(viewModel, ct);
 
     return View(viewModel);
   }
@@ -58,20 +58,27 @@ public class CarsController(
   [HttpPost]
   [Authorize(Roles = "Admin")]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Create(
-    CreateCarViewModel request,
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Create(CreateCarViewModel request, CancellationToken ct)
   {
     if (!ModelState.IsValid)
     {
-      await PopulateCategoriesAsync(request, cancellationToken);
+      await PopulateCategoriesAsync(request, ct);
 
       return View(request);
     }
 
-    await _carService.AddAsync(request, GetUserRole(), cancellationToken);
+    var result = await _carService.AddAsync(request, GetUserRole(), ct);
 
-    return RedirectToAction(nameof(Index));
+    if (result.Success)
+    {
+      return RedirectToAction(nameof(Showcase));
+    }
+
+    ModelState.AddModelError("", result.Message ?? "Beklenmeyen bir hata meydana geldi.");
+
+    await PopulateCategoriesAsync(request, ct);
+
+    return View(request);
   }
 
   [HttpGet]
@@ -138,7 +145,7 @@ public class CarsController(
     viewModel.Categories = categoriesResult.Data?.Select(c => new SelectListItem
     {
       Value = c.Id.ToString(),
-      Text = c.Name
+      Text = c.Name.ToUpper()
     });
   }
 }

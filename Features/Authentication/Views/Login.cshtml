@@ -2,11 +2,10 @@
 @model LoginUserViewModel
 @{
   ViewData["Title"] = "Access Portal";
-  ViewData["IsHeroPage"] = false; // Utilizes the standard container and Hazard Buffer
+  ViewData["IsHeroPage"] = false;
 }
 
 <div class="w-full max-w-md mx-auto relative z-10 flex flex-col items-center">
-  <!-- Portal Header -->
   <div class="text-center mb-12 w-full">
     <h1 class="font-display text-[107px] font-extrabold text-white uppercase mb-4 leading-[100px] tracking-tighter">
       Access Portal
@@ -19,7 +18,6 @@
   <form asp-action="Login" method="POST" class="w-full space-y-6 flex flex-col">
     @Html.AntiForgeryToken()
 
-    <!-- Email Input -->
     <div class="flex flex-col space-y-2 text-left">
       <label asp-for="Email" class="font-mono text-[11px] font-bold text-white uppercase tracking-[1.9px]">Email Address</label>
       <input asp-for="Email"
@@ -28,7 +26,6 @@
       <span asp-validation-for="Email" class="text-error text-xs font-mono uppercase tracking-tighter"></span>
     </div>
 
-    <!-- Password Input -->
     <div class="flex flex-col space-y-2 text-left">
       <div class="flex justify-between items-center">
         <label asp-for="Password" class="font-mono text-[11px] font-bold text-white uppercase tracking-[1.9px]">Password</label>
@@ -39,13 +36,6 @@
       <span asp-validation-for="Password" class="text-error text-xs font-mono uppercase tracking-tighter"></span>
     </div>
 
-    <!-- Remember Me -->
-    <div class="flex items-center gap-3">
-      <input asp-for="RememberMe" class="w-4 h-4 rounded-sm border-white bg-transparent text-acid-mint focus:ring-acid-mint" />
-      <label asp-for="RememberMe" class="font-mono text-[11px] font-bold text-on-surface-variant uppercase tracking-[1.9px]">Remember Session</label>
-    </div>
-
-    <!-- Primary Action -->
     <div class="pt-4 flex flex-col space-y-6 items-center w-full">
       <button type="submit"
               class="w-full py-4 px-8 border border-acid-mint rounded-[20px] font-mono text-[12px] font-bold text-acid-mint hover:bg-acid-mint hover:text-surface transition-all duration-300 uppercase tracking-[1.5px]">
@@ -54,13 +44,10 @@
 
       <div class="flex space-x-6">
         <a asp-action="Register" class="font-mono text-[11px] font-bold text-on-surface-variant hover:text-acid-mint transition-colors duration-200 underline decoration-1 underline-offset-4 tracking-[1.9px]">REGISTER</a>
-        <span class="text-outline-variant font-mono text-[11px]">|</span>
-        <a href="#" class="font-mono text-[11px] font-bold text-on-surface-variant hover:text-acid-mint transition-colors duration-200 underline decoration-1 underline-offset-4 tracking-[1.9px]">FORGOT PASSWORD</a>
       </div>
     </div>
   </form>
 
-  <!-- Hazard Accent Strike -->
   <div class="mt-16 w-12 h-1 bg-acid-mint"></div>
 </div>
 

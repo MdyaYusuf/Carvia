@@ -1,5 +1,6 @@
 ﻿using Carvia.Core.Entities;
 using Carvia.Features.CuratorItems;
+using Carvia.Features.Roles;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Carvia.Features.Users;
@@ -28,5 +29,7 @@ public class User : BaseEntity<Guid>
   public bool IsActive { get; set; } = true;
 
   // Navigational properties
+  public int RoleId { get; set; }
+  public virtual Role Role { get; set; } = default!;
   public virtual ICollection<CuratorItem> CuratorItems { get; set; }
 }

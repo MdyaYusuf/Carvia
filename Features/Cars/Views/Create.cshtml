@@ -1,0 +1,91 @@
+﻿@model CreateCarViewModel
+@{
+  ViewData["Title"] = "Add New Vision";
+}
+
+<div class="max-w-[800px] mx-auto py-20">
+  <div class="flex items-center gap-4 mb-12">
+    <div class="w-1 h-8 bg-acid-mint"></div>
+    <h1 class="font-display text-4xl font-extrabold text-white uppercase tracking-tighter">
+      Register New Vision
+    </h1>
+  </div>
+
+  <form asp-action="Create" method="post" enctype="multipart/form-data" class="flex flex-col gap-8">
+    <div asp-validation-summary="ModelOnly" class="text-error font-mono text-xs"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="flex flex-col gap-2">
+        <label asp-for="Make" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Manufacturer</label>
+        <input asp-for="Make" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 transition-colors font-body text-sm" placeholder="e.g. CARVIA" />
+        <span asp-validation-for="Make" class="text-error font-mono text-[10px] uppercase"></span>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label asp-for="Model" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Designation</label>
+        <input asp-for="Model" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 transition-colors font-body text-sm" placeholder="e.g. HONDA JAZZ" />
+        <span asp-validation-for="Model" class="text-error font-mono text-[10px] uppercase"></span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="flex flex-col gap-2">
+        <label asp-for="Year" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Release Year</label>
+        <input asp-for="Year" type="number" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label asp-for="Price" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Market Value</label>
+        <input asp-for="Price" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label asp-for="CategoryId" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Classification</label>
+        <select asp-for="CategoryId" asp-items="Model.Categories" class="bg-background border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm appearance-none">
+          <option value="">Select Category</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label asp-for="Description" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Editorial Narrative</label>
+      <textarea asp-for="Description" rows="4" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm resize-none"></textarea>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label asp-for="MainImage" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Hero Capture (16:9)</label>
+      <div id="image-upload-container" class="border border-dashed border-outline-variant rounded-[4px] min-h-[200px] flex flex-col items-center justify-center gap-4 hover:border-acid-mint transition-colors cursor-pointer relative overflow-hidden">
+        <input asp-for="MainImage" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-20" />
+        
+        <div id="upload-placeholder" class="flex flex-col items-center gap-4">
+          <span class="material-symbols-outlined text-4xl text-outline">add_a_photo</span>
+          <span class="font-mono text-[10px] text-outline uppercase">Upload Main Visual</span>
+        </div>
+
+        <img id="image-preview" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10" />
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <button type="submit" class="w-full bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase py-6 rounded-full hover:bg-acid-mint hover:text-background transition-colors tracking-[1.5px]">
+        Commit Vision to Registry
+      </button>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+  <script>
+    document.querySelector('input[type="file"]').onchange = evt => {
+      const [file] = evt.target.files;
+      if (file) {
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+                
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      }
+    }
+  </script>
+}

@@ -1,7 +1,10 @@
-﻿using Carvia.Core.Models;
+﻿using Carvia.Core.Exceptions;
+using Carvia.Core.Models;
 using Carvia.Core.Persistence;
 using Carvia.Core.Utilities.Security;
+using Carvia.Features.Roles;
 using Carvia.Features.Users;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,6 +16,7 @@ namespace Carvia.Features.Authentication;
 
 public class AuthenticationService(
   IUserRepository _userRepository,
+  IRoleRepository _roleRepository,
   UserBusinessRules _userBusinessRules,
   AuthenticationBusinessRules _authBusinessRules,
   UserMapper _userMapper,
@@ -29,6 +33,7 @@ public class AuthenticationService(
   {
     var user = await _userRepository.GetAsync(
       u => u.Email == request.Email,
+      include: q => q.Include(u => u.Role),
       enableTracking: true,
       cancellationToken: cancellationToken);
 
@@ -62,6 +67,8 @@ public class AuthenticationService(
     await _userBusinessRules.UserEmailMustBeUniqueAsync(request.Email, cancellationToken: cancellationToken);
     await _userBusinessRules.UsernameMustBeUniqueAsync(request.Username, cancellationToken: cancellationToken);
 
+    var defaultRole = await _roleRepository.GetAsync(r => r.Name == "User", cancellationToken: cancellationToken) ?? throw new BusinessException("Sistemde varsayılan 'User' rolü bulunamadı.");
+
     HashingHelper.CreatePasswordHash(request.Password, out string hash, out string key);
 
     var user = new User
@@ -70,7 +77,8 @@ public class AuthenticationService(
       Email = request.Email,
       PasswordHash = hash,
       PasswordKey = key,
-      IsActive = true
+      IsActive = true,
+      RoleId = defaultRole.Id
     };
 
     await _userRepository.AddAsync(user, cancellationToken);
@@ -95,6 +103,7 @@ public class AuthenticationService(
 
     var user = await _userRepository.GetAsync(
       u => u.RefreshToken == token,
+      include: q => q.Include(u => u.Role),
       enableTracking: true,
       cancellationToken: cancellationToken);
 
@@ -190,11 +199,13 @@ public class AuthenticationService(
     {
       new(ClaimTypes.NameIdentifier, user.Id.ToString()),
       new(ClaimTypes.Email, user.Email),
-      new(ClaimTypes.Name, user.Username)
+      new(ClaimTypes.Name, user.Username),
+      new(ClaimTypes.Role, user.Role.Name)
     };
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecurityKey));
     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
     expiration = DateTime.Now.AddMinutes(_options.AccessTokenExpiration);
 
     var token = new JwtSecurityToken(

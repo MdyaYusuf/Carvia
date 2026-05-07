@@ -4,6 +4,7 @@ using Carvia.Features.CarImages;
 using Carvia.Features.Cars;
 using Carvia.Features.Categories;
 using Carvia.Features.CuratorItems;
+using Carvia.Features.Roles;
 using Carvia.Features.Users;
 using Carvia.Infrastructure.Data;
 using Carvia.Infrastructure.Middlewares;
@@ -22,6 +23,7 @@ builder.Services.AddCarImageDependencies();
 builder.Services.AddCategoryDependencies();
 builder.Services.AddCuratorItemDependencies();
 builder.Services.AddUserDependencies();
+builder.Services.AddRoleDependencies();
 builder.Services.AddAuthenticationDependencies();
 
 builder.Services.AddControllersWithViews();

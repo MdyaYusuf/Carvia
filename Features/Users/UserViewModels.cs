@@ -10,7 +10,8 @@ public sealed record CreatedUserViewModel(
 public sealed record ShowcaseUserViewModel(
   Guid Id,
   string Username,
-  string? ProfileImageUrl);
+  string? ProfileImageUrl,
+  string? RoleName);
 
 public class DetailedUserViewModel
 {
@@ -20,6 +21,7 @@ public class DetailedUserViewModel
   public string? ProfileImageUrl { get; set; }
   public string? Bio { get; set; }
   public bool IsActive { get; set; }
+  public string? RoleName { get; set; }
   public int CuratorItemCount { get; set; }
 }
 

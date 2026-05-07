@@ -15,18 +15,23 @@ public class AuthenticationController(
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Login(
-    LoginUserViewModel request,
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Login(LoginUserViewModel request, CancellationToken cancellationToken)
   {
     if (!ModelState.IsValid)
     {
       return View(request);
     }
 
-    await _authService.LoginAsync(request, cancellationToken);
+    var result = await _authService.LoginAsync(request, cancellationToken);
 
-    return RedirectToAction("Index", "Cars");
+    if (result.Success)
+    {
+      return RedirectToAction("Showcase", "Cars");
+    }
+
+    ModelState.AddModelError("", result.Message ?? "Giriş başarısız.");
+
+    return View(request);
   }
 
   [HttpGet]
@@ -37,28 +42,32 @@ public class AuthenticationController(
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Register(
-    RegisterUserViewModel request,
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Register(RegisterUserViewModel request, CancellationToken cancellationToken)
   {
     if (!ModelState.IsValid)
     {
       return View(request);
     }
 
-    await _authService.RegisterAsync(request, cancellationToken);
+    var result = await _authService.RegisterAsync(request, cancellationToken);
 
-    return RedirectToAction(nameof(Login));
+    if (result.Success)
+    {
+      return RedirectToAction(nameof(Login));
+    }
+
+    ModelState.AddModelError("", result.Message ?? "Kayıt sırasında bir hata oluştu.");
+
+    return View(request);
   }
 
   [HttpPost]
   [Authorize]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Logout(
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Logout(CancellationToken cancellationToken)
   {
     await _authService.RevokeRefreshTokenAsync(null, cancellationToken);
 
-    return RedirectToAction("Index", "Cars");
+    return RedirectToAction("Showcase", "Cars");
   }
 }

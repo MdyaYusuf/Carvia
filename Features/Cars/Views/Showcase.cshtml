@@ -19,9 +19,20 @@
 
   <!-- Feed Content -->
   <div class="flex-1 max-w-4xl space-y-12 pb-20">
-    <div class="flex space-x-6 border-b border-outline-variant pb-4 mb-8">
-      <button class="font-mono text-[11px] font-bold text-acid-mint tracking-[1.9px] uppercase">ALL MODELS</button>
-      <button class="font-mono text-[11px] font-bold text-on-surface-variant hover:text-white transition-colors tracking-[1.9px] uppercase">PROTOTYPES</button>
+    <div class="flex items-center justify-between border-b border-outline-variant pb-4 mb-8">
+      <div class="flex space-x-6">
+        <button class="font-mono text-[11px] font-bold text-acid-mint tracking-[1.9px] uppercase">ALL MODELS</button>
+        <button class="font-mono text-[11px] font-bold text-on-surface-variant hover:text-white transition-colors tracking-[1.9px] uppercase">PROTOTYPES</button>
+      </div>
+
+      @* Only visible to Admins *@
+      @if (User.IsInRole("Admin"))
+      {
+        <a asp-action="Create" class="group flex items-center gap-2 font-mono text-[11px] font-bold text-acid-mint hover:text-white transition-all tracking-[1.9px] uppercase">
+          <span class="material-symbols-outlined text-base group-hover:rotate-90 transition-transform">add_circle</span>
+          REGISTER VISION
+        </a>
+      }
     </div>
 
     @foreach (var car in Model)

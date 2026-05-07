@@ -37,6 +37,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     builder.Property(u => u.PasswordKey)
       .IsRequired();
 
+    builder.Property(u => u.RoleId)
+      .IsRequired();
+
     builder.Property(u => u.RefreshToken)
       .HasMaxLength(500)
       .IsRequired(false);
@@ -55,6 +58,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     builder.Property(u => u.IsActive)
       .HasDefaultValue(true)
       .IsRequired();
+
+    builder.HasOne(u => u.Role)
+      .WithMany(r => r.Users)
+      .HasForeignKey(u => u.RoleId)
+      .OnDelete(DeleteBehavior.Restrict);
 
     builder.HasMany(u => u.CuratorItems)
       .WithOne(ci => ci.User)
