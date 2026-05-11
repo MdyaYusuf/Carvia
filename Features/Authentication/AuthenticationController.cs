@@ -1,4 +1,6 @@
 ﻿using Carvia.Infrastructure.Controllers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,11 +28,19 @@ public class AuthenticationController(
 
     if (result.Success)
     {
+      await HttpContext.SignInAsync(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        result.Data.Principal,
+        new AuthenticationProperties
+        {
+          IsPersistent = true,
+          ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+        });
+
       return RedirectToAction("Showcase", "Cars");
     }
 
     ModelState.AddModelError("", result.Message ?? "Giriş başarısız.");
-
     return View(request);
   }
 
@@ -57,7 +67,6 @@ public class AuthenticationController(
     }
 
     ModelState.AddModelError("", result.Message ?? "Kayıt sırasında bir hata oluştu.");
-
     return View(request);
   }
 
@@ -68,6 +77,8 @@ public class AuthenticationController(
   {
     await _authService.RevokeRefreshTokenAsync(null, cancellationToken);
 
-    return RedirectToAction("Showcase", "Cars");
+    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+    return RedirectToAction("Index", "Cars");
   }
 }

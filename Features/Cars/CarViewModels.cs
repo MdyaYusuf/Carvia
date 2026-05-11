@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Carvia.Features.CarImages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 public sealed record CreatedCarViewModel(
@@ -24,8 +25,12 @@ public class DetailedCarViewModel
   public Guid CategoryId { get; set; }
   public string CategoryName { get; set; } = null!;
   public string MainImageUrl { get; set; } = null!;
-  public IEnumerable<string> GalleryUrls { get; set; } = new List<string>();
+  public IEnumerable<GalleryImageDetails> Gallery { get; set; } = new List<GalleryImageDetails>();
 }
+
+public record GalleryImageDetails(
+  Guid Id,
+  string Url);
 
 public class CreateCarViewModel
 {
@@ -42,6 +47,7 @@ public class CreateCarViewModel
   [Display(Name = "Category")]
   public Guid CategoryId { get; set; }
   public IFormFile? MainImage { get; set; }
+  public List<IFormFile>? GalleryImages { get; set; }
   public IEnumerable<SelectListItem>? Categories { get; set; }
 }
 
@@ -61,8 +67,10 @@ public class UpdateCarViewModel
   public string Description { get; set; } = null!;
   [Display(Name = "Category")]
   public Guid CategoryId { get; set; }
-  [StringLength(500)]
   public string? ExistingImageUrl { get; set; }
   public IFormFile? NewMainImage { get; set; }
+  public List<IFormFile>? NewGalleryImages { get; set; }
+  public List<Guid>? DeletedImageIds { get; set; }
+  public List<ShowcaseCarImageViewModel>? CurrentGallery { get; set; }
   public IEnumerable<SelectListItem>? Categories { get; set; }
 }

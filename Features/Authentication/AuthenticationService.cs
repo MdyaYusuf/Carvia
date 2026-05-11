@@ -4,6 +4,7 @@ using Carvia.Core.Persistence;
 using Carvia.Core.Utilities.Security;
 using Carvia.Features.Roles;
 using Carvia.Features.Users;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -27,7 +28,7 @@ public class AuthenticationService(
   private readonly TokenOptions _options = _tokenOptions.Value;
   private const string CookieName = "refreshToken";
 
-  public async Task<ReturnModel<AuthenticatedUserViewModel>> LoginAsync(
+  public async Task<ReturnModel<(AuthenticatedUserViewModel, ClaimsPrincipal)>> LoginAsync(
     LoginUserViewModel request,
     CancellationToken cancellationToken)
   {
@@ -41,20 +42,21 @@ public class AuthenticationService(
     _userBusinessRules.UserMustBeActive(user!);
 
     var accessToken = CreateToken(user!, out DateTime expiration);
+    var principal = CreatePrincipal(user!);
+
     user!.RefreshToken = GenerateRefreshToken();
     user.RefreshTokenExpiration = DateTime.Now.AddDays(_options.RefreshTokenExpiration);
-
     SetRefreshTokenCookie(user.RefreshToken, user.RefreshTokenExpiration.Value);
 
     _userRepository.Update(user);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     var userShowcase = _userMapper.EntityToShowcaseViewModel(user);
-    var authResponse = new AuthenticatedUserViewModel(accessToken, expiration, user.RefreshToken, userShowcase);
+    var authResponse = new AuthenticatedUserViewModel(accessToken, expiration, user.RefreshToken!, userShowcase);
 
-    return new ReturnModel<AuthenticatedUserViewModel>
+    return new ReturnModel<(AuthenticatedUserViewModel, ClaimsPrincipal)>
     {
-      Data = authResponse,
+      Data = (authResponse, principal),
       Success = true,
       StatusCode = 200
     };
@@ -67,7 +69,8 @@ public class AuthenticationService(
     await _userBusinessRules.UserEmailMustBeUniqueAsync(request.Email, cancellationToken: cancellationToken);
     await _userBusinessRules.UsernameMustBeUniqueAsync(request.Username, cancellationToken: cancellationToken);
 
-    var defaultRole = await _roleRepository.GetAsync(r => r.Name == "User", cancellationToken: cancellationToken) ?? throw new BusinessException("Sistemde varsayılan 'User' rolü bulunamadı.");
+    var defaultRole = await _roleRepository.GetAsync(r => r.Name == "Admin", cancellationToken: cancellationToken)
+        ?? throw new BusinessException("Default role not found.");
 
     HashingHelper.CreatePasswordHash(request.Password, out string hash, out string key);
 
@@ -84,18 +87,16 @@ public class AuthenticationService(
     await _userRepository.AddAsync(user, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-    var createdUserResponse = _userMapper.EntityToCreatedViewModel(user);
-
     return new ReturnModel<CreatedUserViewModel>
     {
       Success = true,
-      Message = "Kullanıcı başarıyla kaydedildi.",
-      Data = createdUserResponse,
+      Message = "User registered successfully.",
+      Data = _userMapper.EntityToCreatedViewModel(user),
       StatusCode = 201
     };
   }
 
-  public async Task<ReturnModel<AuthenticatedUserViewModel>> RefreshTokenAsync(
+  public async Task<ReturnModel<(AuthenticatedUserViewModel, ClaimsPrincipal)>> RefreshTokenAsync(
     string? refreshToken,
     CancellationToken cancellationToken)
   {
@@ -110,6 +111,7 @@ public class AuthenticationService(
     _authBusinessRules.RefreshTokenMustBeValid(user);
 
     var accessToken = CreateToken(user!, out DateTime expiration);
+    var principal = CreatePrincipal(user!);
 
     if (user!.RefreshTokenExpiration <= DateTime.Now.AddDays(1))
     {
@@ -120,12 +122,11 @@ public class AuthenticationService(
 
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-    var userShowcase = _userMapper.EntityToShowcaseViewModel(user);
-    var authResponse = new AuthenticatedUserViewModel(accessToken, expiration, user.RefreshToken!, userShowcase);
+    var authResponse = new AuthenticatedUserViewModel(accessToken, expiration, user.RefreshToken!, _userMapper.EntityToShowcaseViewModel(user));
 
-    return new ReturnModel<AuthenticatedUserViewModel>
+    return new ReturnModel<(AuthenticatedUserViewModel, ClaimsPrincipal)>
     {
-      Data = authResponse,
+      Data = (authResponse, principal),
       Success = true,
       StatusCode = 200
     };
@@ -136,14 +137,12 @@ public class AuthenticationService(
     CancellationToken cancellationToken)
   {
     var token = refreshToken ?? _httpContextAccessor.HttpContext?.Request.Cookies[CookieName];
-
     var user = await _userRepository.GetAsync(u => u.RefreshToken == token);
 
     _authBusinessRules.RefreshTokenUserMustExist(user);
 
     user!.RefreshToken = null;
     user.RefreshTokenExpiration = null;
-
     DeleteRefreshTokenCookie();
 
     _userRepository.Update(user);
@@ -152,25 +151,35 @@ public class AuthenticationService(
     return new ReturnModel<NoData>
     {
       Success = true,
-      Message = "Oturum başarıyla sonlandırıldı.",
+      Message = "Logged out.",
       StatusCode = 200
     };
   }
-
-  private void SetRefreshTokenCookie(
-    string token,
-    DateTime expires)
+  private ClaimsPrincipal CreatePrincipal(User user)
   {
-    var cookieOptions = new CookieOptions
+    var claims = new List<Claim>
+    {
+      new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+      new(ClaimTypes.Email, user.Email),
+      new(ClaimTypes.Name, user.Username),
+      new(ClaimTypes.Role, user.Role.Name)
+    };
+
+    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+    return new ClaimsPrincipal(identity);
+  }
+
+  private void SetRefreshTokenCookie(string token, DateTime expires)
+  {
+    _httpContextAccessor.HttpContext?.Response.Cookies.Append(CookieName, token, new CookieOptions
     {
       HttpOnly = true,
       Secure = true,
       SameSite = SameSiteMode.Strict,
       Expires = expires,
       Path = "/"
-    };
-
-    _httpContextAccessor.HttpContext?.Response.Cookies.Append(CookieName, token, cookieOptions);
+    });
   }
 
   private void DeleteRefreshTokenCookie()
@@ -186,14 +195,10 @@ public class AuthenticationService(
 
   private string GenerateRefreshToken()
   {
-    byte[] randomBytes = RandomNumberGenerator.GetBytes(64);
-
-    return Convert.ToBase64String(randomBytes);
+    return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
   }
 
-  private string CreateToken(
-    User user,
-    out DateTime expiration)
+  private string CreateToken(User user, out DateTime expiration)
   {
     var claims = new List<Claim>
     {
@@ -205,15 +210,9 @@ public class AuthenticationService(
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecurityKey));
     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
     expiration = DateTime.Now.AddMinutes(_options.AccessTokenExpiration);
 
-    var token = new JwtSecurityToken(
-      issuer: _options.Issuer,
-      audience: _options.Audience,
-      claims: claims,
-      expires: expiration,
-      signingCredentials: creds);
+    var token = new JwtSecurityToken(_options.Issuer, _options.Audience, claims, expires: expiration, signingCredentials: creds);
 
     return new JwtSecurityTokenHandler().WriteToken(token);
   }

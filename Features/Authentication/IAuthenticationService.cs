@@ -1,11 +1,11 @@
 ﻿using Carvia.Core.Models;
+using Carvia.Features.Authentication;
 using Carvia.Features.Users;
-
-namespace Carvia.Features.Authentication;
+using System.Security.Claims;
 
 public interface IAuthenticationService
 {
-  Task<ReturnModel<AuthenticatedUserViewModel>> LoginAsync(
+  Task<ReturnModel<(AuthenticatedUserViewModel AuthResponse, ClaimsPrincipal Principal)>> LoginAsync(
     LoginUserViewModel request,
     CancellationToken cancellationToken);
 
@@ -13,7 +13,7 @@ public interface IAuthenticationService
     RegisterUserViewModel request,
     CancellationToken cancellationToken = default);
 
-  Task<ReturnModel<AuthenticatedUserViewModel>> RefreshTokenAsync(
+  Task<ReturnModel<(AuthenticatedUserViewModel AuthResponse, ClaimsPrincipal Principal)>> RefreshTokenAsync(
     string? refreshToken,
     CancellationToken cancellationToken);
 

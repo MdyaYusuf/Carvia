@@ -27,6 +27,7 @@ builder.Services.AddRoleDependencies();
 builder.Services.AddAuthenticationDependencies();
 
 builder.Services.AddControllersWithViews();
+
 builder.Services.Configure<RazorViewEngineOptions>(options =>
 {
   options.ViewLocationExpanders.Clear();
@@ -38,21 +39,24 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 builder.Services.Configure<TokenOptions>(builder.Configuration.GetSection("TokenOptions"));
-
-var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>() ?? throw new InvalidOperationException("TokenOptions bölümü yapılandırma dosyasında appsettings bulunamadı.");
+var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>()
+  ?? throw new InvalidOperationException("TokenOptions section not found in appsettings.");
 
 builder.Services.AddAuthentication(options =>
 {
   options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-  options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+  options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+  options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+  options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 })
 .AddCookie(options =>
 {
-  options.LoginPath = "/Account/Login";
-  options.LogoutPath = "/Account/Logout";
+  options.LoginPath = "/Authentication/Login";
+  options.LogoutPath = "/Authentication/Logout";
+  options.AccessDeniedPath = "/Authentication/Login";
   options.Cookie.HttpOnly = true;
   options.Cookie.SameSite = SameSiteMode.Strict;
-  options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+  options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
   options.ExpireTimeSpan = TimeSpan.FromDays(7);
 })
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>

@@ -1,57 +1,95 @@
 ﻿@model IEnumerable<ShowcaseCarViewModel>
 @{
-  ViewData["Title"] = "The Timeline";
+  ViewData["Title"] = "Car Registry";
   ViewData["IsHeroPage"] = false;
 }
 
 <div class="relative flex gap-10">
-  <!-- Left Spine: Decorative Timeline -->
   <aside class="hidden lg:flex w-16 flex-col items-center border-r border-outline-variant pt-20 relative">
     <div class="sticky top-40 h-[calc(100vh-200px)] flex flex-col items-center">
       <div class="h-full border-l border-dashed border-outline-variant relative">
         <div class="absolute top-0 -left-[5px] w-[9px] h-[9px] rounded-full bg-acid-mint"></div>
-        <!-- Hazard Dots -->
-        <div class="absolute top-1/4 -left-[5px] w-[9px] h-[9px] rounded-full bg-outline-variant"></div>
-        <div class="absolute top-2/4 -left-[5px] w-[9px] h-[9px] rounded-full bg-outline-variant"></div>
       </div>
     </div>
   </aside>
 
-  <!-- Feed Content -->
-  <div class="flex-1 max-w-4xl space-y-12 pb-20">
+  <div class="flex-1 space-y-12 pb-20">
     <div class="flex items-center justify-between border-b border-outline-variant pb-4 mb-8">
       <div class="flex space-x-6">
-        <button class="font-mono text-[11px] font-bold text-acid-mint tracking-[1.9px] uppercase">ALL MODELS</button>
-        <button class="font-mono text-[11px] font-bold text-on-surface-variant hover:text-white transition-colors tracking-[1.9px] uppercase">PROTOTYPES</button>
+        <button class="font-label-mono text-acid-mint uppercase">All Models</button>
       </div>
 
-      @* Only visible to Admins *@
       @if (User.IsInRole("Admin"))
       {
-        <a asp-action="Create" class="group flex items-center gap-2 font-mono text-[11px] font-bold text-acid-mint hover:text-white transition-all tracking-[1.9px] uppercase">
-          <span class="material-symbols-outlined text-base group-hover:rotate-90 transition-transform">add_circle</span>
-          REGISTER VISION
+        <a asp-action="Create" class="btn-carvia-primary py-2 px-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">add</span>
+          ADD NEW CAR
         </a>
       }
     </div>
 
-    @foreach (var car in Model)
+    @if (!Model.Any())
     {
-      <article class="group relative bg-surface border border-outline-variant rounded-[40px] overflow-hidden hover:border-acid-mint transition-colors duration-300">
-        <div class="absolute top-6 left-6 z-10 w-1 h-6 bg-acid-mint"></div>
-        <div class="p-6">
-          <div class="border border-outline-variant rounded p-1 mb-6">
-            <img src="@car.ImageUrl" class="w-full aspect-video object-cover rounded" alt="@car.Make @car.Model" />
+      <main class="flex flex-col items-center justify-center pt-20 text-center relative">
+        <div class="hazard-bar mb-12"></div>
+        <h1 class="font-display-hero text-white mb-6 uppercase">YOUR COLLECTION<br />IS EMPTY</h1>
+        <p class="font-body-large text-on-surface-variant max-w-xl mx-auto mb-12 text-lg">
+          Start curating your high-performance garage to build your personal car registry.
+        </p>
+
+        @if (User.IsInRole("Admin"))
+        {
+          <a asp-action="Create" class="btn-carvia-primary uppercase">ADD FIRST CAR</a>
+        }
+      </main>
+    }
+    else
+    {
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        @foreach (var car in Model)
+        {
+          <div onclick="navigateToDetails(event, '@Url.Action("Details", "Cars", new { id = car.Id })')"
+               class="block group cursor-pointer">
+            <article class="relative bg-surface-container border border-outline-variant rounded-[40px] overflow-hidden hover:border-acid-mint transition-all duration-500">
+              <div class="p-6">
+                <div class="border border-outline-variant rounded-lg overflow-hidden p-1 mb-6">
+                  <img src="@car.ImageUrl" class="w-full aspect-video object-cover rounded-md group-hover:scale-105 transition-transform duration-700" alt="@car.Make @car.Model" />
+                </div>
+                <div class="px-2">
+                  <p class="font-label-mono text-on-surface-variant mb-2">@car.Year • @car.Make</p>
+                  <h2 class="font-display text-3xl font-extrabold text-white group-hover:text-acid-mint transition-colors mb-6 uppercase">@car.Model</h2>
+                  
+                  <div class="flex items-center justify-between">
+                    <span class="font-label-mono text-acid-mint flex items-center gap-2">
+                      VIEW SPECS <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
+                    </span>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                      <button type="button"
+                              onclick="event.stopPropagation(); openEditModal('@car.Id')"
+                              class="font-label-mono text-[10px] text-white/40 hover:text-acid-mint uppercase tracking-[2px] transition-colors relative z-30">
+                        Edit Entry
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            </article>
           </div>
-          <div class="px-2">
-            <p class="font-mono text-[11px] font-bold text-on-surface-variant mb-2 uppercase tracking-[1.9px]">@car.Year • @car.Make</p>
-            <h2 class="font-display text-3xl font-bold text-white group-hover:text-acid-mint transition-colors">@car.Model</h2>
-            <div class="mt-6 border-t border-outline-variant pt-4">
-              <a href="/Cars/Details/@car.Id" class="font-mono text-[11px] font-bold text-acid-mint tracking-[1.9px]">EXPLORE SPECS</a>
-            </div>
-          </div>
-        </div>
-      </article>
+        }
+      </div>
     }
   </div>
 </div>
+
+@* --- Edit Modal --- *@
+<partial name="~/Features/Shared/Views/_EditCarModal.cshtml" />
+
+@section Scripts {
+  <script>
+    function navigateToDetails(event, url) {
+        window.location.href = url;
+    }
+  </script>
+}

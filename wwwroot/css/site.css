@@ -26,3 +26,84 @@
     @apply bg-background text-white font-body antialiased selection:bg-acid-mint selection:text-background;
   }
 }
+
+.animate-typing {
+  display: inline-block;
+  width: 0;
+  border-right: 4px solid #A3E635;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: carvia-typing 3.5s steps(30, end) forwards, carvia-blink .75s step-end infinite;
+}
+
+@keyframes carvia-typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes carvia-blink {
+  from, to {
+    border-color: transparent;
+  }
+
+  50% {
+    border-color: #A3E635;
+  }
+}
+
+/* Carvia Design Tokens */
+:root {
+  --carvia-bg: #0d1512;
+  --carvia-mint: #3cffd0;
+  --carvia-outline: #3b4a44;
+  --carvia-on-surface: #b9cac2;
+}
+
+/* Massive Hero Typography */
+.font-display-hero {
+  font-family: 'Epilogue', sans-serif;
+  font-size: clamp(48px, 8vw, 107px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+/* Technical Labels */
+.font-label-mono {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.9px;
+  text-transform: uppercase;
+}
+
+/* Hazard Accent Bar */
+.hazard-bar {
+  width: 4px;
+  height: 64px;
+  background-color: var(--carvia-mint);
+  margin: 0 auto;
+}
+
+/* Precision Button */
+.btn-carvia-primary {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--carvia-mint);
+  padding: 1rem 2rem;
+  border: 1px solid var(--carvia-mint);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.btn-carvia-primary:hover {
+  background-color: var(--carvia-mint);
+  color: var(--carvia-bg);
+}

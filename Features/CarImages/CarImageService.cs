@@ -98,13 +98,14 @@ public class CarImageService(
   }
 
   public async Task<ReturnModel<CreatedCarImageViewModel>> AddAsync(
-    CreateCarImageViewModel request,
-    string userRole,
-    CancellationToken cancellationToken = default)
+  CreateCarImageViewModel request,
+  string userRole,
+  CancellationToken cancellationToken = default)
   {
     _carBusinessRules.UserRoleMustBeAdmin(userRole);
 
-    await _businessRules.CarMustExistAsync(request.CarId, cancellationToken);
+    var car = await _carBusinessRules.GetCarIfExistAsync(request.CarId, cancellationToken: cancellationToken);
+
     _businessRules.DisplayOrderCannotBeNegative(request.DisplayOrder);
 
     CarImage carImage = _mapper.CreateViewModelToEntity(request);
@@ -112,10 +113,11 @@ public class CarImageService(
     if (request.ImageFile is { Length: > 0 })
     {
       FileHelper.ValidateImage(request.ImageFile);
+
       carImage.Url = await FileHelper.SaveImageToDisk(
         request.ImageFile,
         "gallery",
-        $"car-{request.CarId}",
+        $"{car.Make}-{car.Model}-detail",
         cancellationToken);
     }
 
@@ -161,9 +163,9 @@ public class CarImageService(
   }
 
   public async Task<ReturnModel<NoData>> UpdateAsync(
-    UpdateCarImageViewModel request,
-    string userRole,
-    CancellationToken cancellationToken = default)
+  UpdateCarImageViewModel request,
+  string userRole,
+  CancellationToken cancellationToken = default)
   {
     _carBusinessRules.UserRoleMustBeAdmin(userRole);
 
@@ -172,10 +174,7 @@ public class CarImageService(
       enableTracking: true,
       cancellationToken: cancellationToken);
 
-    if (existingImage.CarId != request.CarId)
-    {
-      await _businessRules.CarMustExistAsync(request.CarId, cancellationToken);
-    }
+    var car = await _carBusinessRules.GetCarIfExistAsync(request.CarId, cancellationToken: cancellationToken);
 
     _businessRules.DisplayOrderCannotBeNegative(request.DisplayOrder);
 
@@ -183,7 +182,7 @@ public class CarImageService(
       request.NewImageFile,
       existingImage.Url,
       "gallery",
-      $"car-{request.CarId}",
+      $"{car.Make}-{car.Model}-detail",
       cancellationToken) ?? existingImage.Url;
 
     await _businessRules.ImageUrlMustBeUniqueForCarAsync(existingImage.Url, request.CarId, request.Id, cancellationToken);

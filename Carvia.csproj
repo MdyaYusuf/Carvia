@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\toastify-js\" />
+    <Folder Include="wwwroot\uploads\cars\" />
   </ItemGroup>
 
   <ItemGroup>

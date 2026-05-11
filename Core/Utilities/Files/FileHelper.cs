@@ -26,7 +26,8 @@ public static class FileHelper
   public static async Task<string> SaveImageToDisk(IFormFile file, string subFolder, string name, CancellationToken cancellationToken)
   {
     string wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-    string targetPath = Path.Combine(wwwrootPath, "images", subFolder);
+
+    string targetPath = Path.Combine(wwwrootPath, "uploads", subFolder);
 
     if (!Directory.Exists(targetPath))
     {
@@ -45,7 +46,7 @@ public static class FileHelper
       await file.CopyToAsync(stream, cancellationToken);
     }
 
-    return $"/images/{subFolder}/{fileName}";
+    return $"/uploads/{subFolder}/{fileName}";
   }
 
   public static void DeleteImageFromDisk(string? relativePath)
@@ -66,7 +67,7 @@ public static class FileHelper
     }
     catch
     {
-      // We catch but don't throw here. If a file deletion fails, we don't want to crash the whole update process.
+      // Silently catch deletion errors to avoid breaking the main transaction
     }
   }
 
@@ -108,10 +109,7 @@ public static class FileHelper
                .Replace("ş", "s")
                .Replace("ü", "u");
 
-    // Remove anything that isn't a letter, number, or space
     slug = Regex.Replace(slug, @"[^a-z0-9\s-]", "");
-
-    // Convert spaces or hyphens to a single hyphen and trim
     slug = Regex.Replace(slug, @"[\s-]+", "-").Trim('-');
 
     return slug;

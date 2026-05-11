@@ -4,36 +4,57 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"] - CARVIA</title>
-  
-  <!-- Branding Fonts -->
+    
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;500;700&family=Epilogue:wght@700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="~/css/app.css" />
+    
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+    darkMode: 'class',
+    theme: {
+    extend: {
+    colors: {
+    'acid-mint': '#3cffd0',
+    'background': '#0d1512',
+    'on-background': '#dbe5df',
+    'outline-variant': '#3b4a44',
+    'surface': '#0d1512',
+    'on-surface-variant': '#b9cac2',
+    'primary-container': '#3afecf'
+    },
+    fontFamily: {
+    'display': ['Epilogue', 'sans-serif'],
+    'mono': ['Space Grotesk', 'monospace'],
+    'body': ['Be Vietnam Pro', 'sans-serif']
+    }
+    }
+    }
+    }
+  </script>
+
+  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="bg-background text-on-background antialiased selection:bg-acid-mint selection:text-background overflow-x-hidden font-body">
 
-  <!-- Persistent Global Navigation -->
   <partial name="_Navbar" />
 
   <main class="min-h-screen">
     @if (ViewData["IsHeroPage"] as bool? == true)
     {
-      @* Full-screen hero sections render outside the container *@
       @RenderBody()
     }
     else
     {
-      @* Standard pages utilize the 1440px grid and Hazard Buffer *@
       <div class="pt-40 pb-20 px-12 max-w-[1440px] mx-auto">
-        <partial name="_ValidationSummary" />
         @RenderBody()
       </div>
     }
   </main>
 
-  <!-- Editorial Footer -->
   <partial name="_Footer" />
 
   @await RenderSectionAsync("Scripts", required: false)

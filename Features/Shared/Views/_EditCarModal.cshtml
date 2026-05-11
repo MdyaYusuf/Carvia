@@ -1,0 +1,208 @@
+﻿<div id="edit-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-xl p-6">
+  <div class="bg-surface-container border border-outline-variant rounded-[40px] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-12 relative shadow-2xl text-left">
+    
+    <button onclick="closeEditModal()" class="absolute top-8 right-8 text-white hover:text-acid-mint transition-colors">
+      <span class="material-symbols-outlined text-4xl">close</span>
+    </button>
+
+    <div class="flex items-center gap-4 mb-12">
+      <div class="w-1 h-8 bg-acid-mint"></div>
+      <h2 class="font-display text-4xl font-extrabold text-white uppercase tracking-tighter">Update Car</h2>
+    </div>
+
+    <form id="edit-car-form" asp-controller="Cars" asp-action="Edit" method="post" enctype="multipart/form-data" class="space-y-8">
+      <input type="hidden" name="Id" id="edit-id" />
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="flex flex-col gap-2">
+          <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Manufacturer</label>
+          <input name="Make" id="edit-make" class="bg-transparent border-b border-outline-variant p-2 text-white focus:border-acid-mint outline-none font-body" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Designation</label>
+          <input name="Model" id="edit-model" class="bg-transparent border-b border-outline-variant p-2 text-white focus:border-acid-mint outline-none font-body" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="flex flex-col gap-2">
+          <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Model Year</label>
+          <input name="Year" id="edit-year" type="number" class="bg-transparent border-b border-outline-variant p-2 text-white focus:border-acid-mint outline-none font-body" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Market Value</label>
+          <input name="Price" id="edit-price" class="bg-transparent border-b border-outline-variant p-2 text-white focus:border-acid-mint outline-none font-body" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Classification</label>
+          <select name="CategoryId" id="edit-category" class="bg-background border-b border-outline-variant p-2 text-white focus:border-acid-mint outline-none font-body appearance-none">
+            <option value="">SELECT SEGMENT</option>
+            @if (ViewBag.Categories != null)
+            {
+              foreach (var cat in (IEnumerable<SelectListItem>)ViewBag.Categories)
+              {
+                <option value="@cat.Value">@cat.Text</option>
+              }
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Technical Narrative</label>
+        <textarea name="Description" id="edit-desc" rows="3" class="bg-transparent border border-outline-variant rounded p-4 text-white focus:border-acid-mint outline-none font-body resize-none"></textarea>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <label class="font-label-mono text-acid-mint text-[10px] uppercase tracking-widest">Update Primary Hero Capture (16:9)</label>
+        <div class="flex items-center gap-6">
+          <div class="w-40 aspect-video border border-outline-variant rounded overflow-hidden bg-white/5 relative group">
+            <img id="edit-main-preview" src="" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-background/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="font-mono text-[8px] text-white">REPLACE</span>
+            </div>
+          </div>
+          <input type="file" id="edit-main-input" name="NewMainImage" accept="image/*" class="text-xs text-on-surface-variant font-mono" />
+        </div>
+      </div>
+
+      <div class="space-y-4 text-left">
+        <label class="font-label-mono text-acid-mint text-[10px] uppercase tracking-widest">Active Gallery (Click to Remove)</label>
+        <div id="edit-gallery-preview" class="grid grid-cols-6 gap-4"></div>
+      </div>
+
+      <div id="new-uploads-section" class="space-y-4 text-left hidden">
+        <label class="font-label-mono text-yellow-400 text-[10px] uppercase tracking-widest">Pending Gallery Uploads (To be committed)</label>
+        <div id="new-gallery-preview" class="grid grid-cols-6 gap-4"></div>
+      </div>
+
+      <div class="flex flex-col gap-4 text-left">
+        <label class="font-label-mono text-outline-variant text-[10px] uppercase tracking-widest">Add Supplementary Visuals</label>
+        <input type="file" id="edit-gallery-input" multiple class="text-xs text-on-surface-variant font-mono" />
+        <input type="file" name="NewGalleryImages" id="final-gallery-input" multiple class="hidden" />
+      </div>
+
+      <button type="submit" class="btn-carvia-primary w-full py-6 rounded-full text-sm font-bold tracking-[3px]">
+        COMMIT UPDATES
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let pendingGalleryFiles = [];
+
+  document.getElementById('edit-main-input').onchange = function(evt) {
+      const [file] = evt.target.files;
+      if (file) {
+          document.getElementById('edit-main-preview').src = URL.createObjectURL(file);
+      }
+  };
+
+  document.getElementById('edit-gallery-input').onchange = function() {
+      const files = Array.from(this.files);
+      pendingGalleryFiles = [...pendingGalleryFiles, ...files];
+      renderPendingGallery();
+      this.value = "";
+  };
+
+  function renderPendingGallery() {
+      const container = document.getElementById('new-gallery-preview');
+      const section = document.getElementById('new-uploads-section');
+      container.innerHTML = '';
+        
+      if (pendingGalleryFiles.length > 0) {
+          section.classList.remove('hidden');
+          pendingGalleryFiles.forEach((file, index) => {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  const div = document.createElement('div');
+                  div.className = "relative aspect-square rounded border border-acid-mint/30 overflow-hidden bg-acid-mint/5 group";
+                  div.innerHTML = `
+                      <img src="${e.target.result}" class="w-full h-full object-cover" />
+                      <button type="button" onclick="removePendingFile(${index})" class="absolute top-1 right-1 bg-error text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span class="material-symbols-outlined text-[12px]">close</span>
+                      </button>
+                  `;
+                  container.appendChild(div);
+              }
+              reader.readAsDataURL(file);
+          });
+      } else {
+          section.classList.add('hidden');
+      }
+      syncFilesToInput();
+  }
+
+  function removePendingFile(index) {
+      pendingGalleryFiles.splice(index, 1);
+      renderPendingGallery();
+  }
+
+  function syncFilesToInput() {
+      const dataTransfer = new DataTransfer();
+      pendingGalleryFiles.forEach(file => dataTransfer.items.add(file));
+      document.getElementById('final-gallery-input').files = dataTransfer.files;
+  }
+
+  function openEditModal(carId) {
+    pendingGalleryFiles = [];
+    renderPendingGallery();
+
+    fetch(`/Cars/GetEditData/${carId}`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('edit-id').value = data.id;
+        document.getElementById('edit-make').value = data.make;
+        document.getElementById('edit-model').value = data.model;
+        document.getElementById('edit-year').value = data.year;
+        document.getElementById('edit-price').value = data.price;
+        document.getElementById('edit-desc').value = data.description;
+          
+        const mainPreview = document.getElementById('edit-main-preview');
+        mainPreview.src = data.mainImageUrl;
+
+        const select = document.getElementById('edit-category');
+        if (data.categoryId && select) {
+            const targetId = String(data.categoryId).toLowerCase().trim();
+            for (let i = 0; i < select.options.length; i++) {
+                if (String(select.options[i].value).toLowerCase().trim() === targetId) {
+                    select.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+      
+        const galleryContainer = document.getElementById('edit-gallery-preview');
+        galleryContainer.innerHTML = '';
+        data.existingGallery.forEach(img => {
+          const div = document.createElement('div');
+          div.className = "relative aspect-square border border-outline-variant rounded overflow-hidden group cursor-pointer transition-all";
+          div.innerHTML = `
+            <img src="${img.url}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+            <input type="checkbox" name="DeletedImageIds" value="${img.id}" class="hidden" />
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-error/20">
+                <span class="material-symbols-outlined text-white">delete</span>
+            </div>
+          `;
+          div.onclick = (e) => {
+            e.stopPropagation();
+            const checkbox = div.querySelector('input');
+            checkbox.checked = !checkbox.checked;
+            div.classList.toggle('border-error', checkbox.checked);
+            div.classList.toggle('opacity-30', checkbox.checked);
+            div.classList.toggle('scale-90', checkbox.checked);
+          };
+          galleryContainer.appendChild(div);
+        });
+
+        document.getElementById('edit-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+</script>

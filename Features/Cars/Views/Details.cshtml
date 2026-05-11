@@ -1,11 +1,10 @@
 ﻿@model DetailedCarViewModel
 @{
   ViewData["Title"] = $"{Model.Make} {Model.Model} - Specs";
-  ViewData["IsHeroPage"] = true; // Hero section bleeds to edges
+  ViewData["IsHeroPage"] = true;
 }
 
-<!-- Hero Section -->
-<header class="relative w-full h-[819px] flex items-end pb-24 px-12 mt-24">
+<header class="relative w-full h-[70vh] flex items-end pb-24 px-12 mt-24">
   <div class="absolute inset-0 z-0">
     <img src="@Model.MainImageUrl"
          alt="@Model.Make @Model.Model"
@@ -15,10 +14,9 @@
     
   <div class="relative z-10 flex flex-col gap-6 max-w-[800px]">
     <div class="flex items-center gap-4">
-      <!-- 4px Hazard Strike -->
       <div class="w-1 h-8 bg-acid-mint"></div>
       <span class="font-mono text-[11px] font-bold text-acid-mint uppercase tracking-[1.9px]">
-        Live Specs . Unveiled
+        Live Specs
       </span>
     </div>
     <h1 class="font-display text-[107px] font-extrabold text-white leading-[100px] tracking-tighter uppercase">
@@ -30,9 +28,7 @@
   </div>
 </header>
 
-<!-- Performance Specs Section -->
 <section class="w-full px-12 py-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[1440px] mx-auto">
-  <!-- Pricing / Output Tile -->
   <div class="border border-outline-variant p-8 flex flex-col gap-4 bg-background group hover:border-acid-mint transition-colors relative overflow-hidden">
     <span class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Market Value</span>
     <span class="font-display text-[40px] leading-none font-bold text-white tracking-tighter">
@@ -41,21 +37,18 @@
     <div class="w-full h-[1px] bg-outline-variant mt-auto"></div>
   </div>
 
-  <!-- Placeholder Tech Spec: Acceleration -->
   <div class="border border-outline-variant p-8 flex flex-col gap-4 bg-background group hover:border-acid-mint transition-colors relative overflow-hidden">
     <span class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Year of Release</span>
     <span class="font-display text-[40px] leading-none font-bold text-white tracking-tighter">@Model.Year</span>
     <div class="w-full h-[1px] bg-outline-variant mt-auto"></div>
   </div>
 
-  <!-- Category Context -->
   <div class="border border-outline-variant p-8 flex flex-col gap-4 bg-background group hover:border-acid-mint transition-colors relative overflow-hidden">
     <span class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Classification</span>
     <span class="font-display text-[40px] leading-none font-bold text-white tracking-tighter uppercase">@Model.CategoryName</span>
     <div class="w-full h-[1px] bg-outline-variant mt-auto"></div>
   </div>
 
-  <!-- Status Flag -->
   <div class="border border-outline-variant p-8 flex flex-col gap-4 bg-background group hover:border-acid-mint transition-colors relative overflow-hidden">
     <span class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Status</span>
     <span class="font-display text-[40px] leading-none font-bold text-white tracking-tighter uppercase">Available</span>
@@ -63,18 +56,27 @@
   </div>
 </section>
 
-<!-- Precision Gallery -->
+@if (User.IsInRole("Admin"))
+{
+  <section class="w-full px-12 py-10 flex justify-center border-t border-b border-outline-variant/10">
+    <button onclick="openEditModal('@Model.Id')"
+            class="bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase px-16 py-5 rounded-full hover:bg-acid-mint hover:text-background transition-all tracking-[2px]">
+      Edit Car Specifications
+    </button>
+  </section>
+}
+
 <section class="w-full px-12 py-20 max-w-[1440px] mx-auto">
   <div class="flex items-center gap-4 mb-12">
     <div class="w-1 h-6 bg-acid-mint"></div>
-    <h2 class="font-display text-3xl font-bold text-white uppercase tracking-tight">Precision Details</h2>
+    <h2 class="font-display text-3xl font-bold text-white uppercase tracking-tight">Gallery</h2>
   </div>
     
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    @foreach (var imageUrl in Model.GalleryUrls)
+    @foreach (var item in Model.Gallery)
     {
       <div class="aspect-video relative rounded overflow-hidden border border-outline-variant group">
-        <img src="@imageUrl"
+        <img src="@item.Url"
              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
              alt="Technical Detail View" />
       </div>
@@ -82,9 +84,18 @@
   </div>
 </section>
 
-<!-- Call to Action -->
-<section class="w-full px-12 py-24 flex justify-center items-center">
-  <button class="bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase px-12 py-6 rounded-full hover:bg-acid-mint hover:text-background transition-colors tracking-[1.5px] w-full md:w-auto">
-    ENQUIRE ABOUT THIS VISION
-  </button>
+<section class="w-full px-12 py-24 flex flex-col gap-12 justify-center items-center border-t border-outline-variant/30">
+  <div class="flex flex-col items-center gap-4">
+    <span class="font-mono text-[12px] text-outline-variant uppercase tracking-[4px]">Carvia Global Registry</span>
+    <p class="font-mono text-[12px] text-on-surface-variant text-center leading-relaxed">
+      PHONE: +90 (555) 768-32-23 <span class="mx-4 text-outline-variant hidden md:inline">|</span> <br class="md:hidden" /> EMAIL: CONTACT@CARVIA.IO
+    </p>
+  </div>
+
+  <a asp-controller="Cars" asp-action="Showcase" class="bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase px-12 py-6 rounded-full hover:bg-acid-mint hover:text-background transition-all tracking-[1.5px] text-center w-full md:w-auto shadow-[0_0_20px_rgba(60,255,208,0.05)]">
+    Get Back to Showcase
+  </a>
 </section>
+
+@* --- Edit Modal --- *@
+<partial name="~/Features/Shared/Views/_EditCarModal.cshtml" />

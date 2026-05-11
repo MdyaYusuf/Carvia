@@ -1,6 +1,8 @@
-﻿using Carvia.Core.Models;
+﻿using Carvia.Core.Exceptions;
+using Carvia.Core.Models;
 using Carvia.Core.Persistence;
 using Carvia.Core.Utilities.Files;
+using Carvia.Features.CarImages;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -98,9 +100,9 @@ public class CarService(
   }
 
   public async Task<ReturnModel<CreatedCarViewModel>> AddAsync(
-    CreateCarViewModel request,
-    string userRole,
-    CancellationToken cancellationToken = default)
+  CreateCarViewModel request,
+  string userRole,
+  CancellationToken cancellationToken = default)
   {
     _businessRules.UserRoleMustBeAdmin(userRole);
 
@@ -121,6 +123,29 @@ public class CarService(
         cancellationToken);
     }
 
+    if (request.GalleryImages != null && request.GalleryImages.Any())
+    {
+      foreach (var imageFile in request.GalleryImages)
+      {
+        if (imageFile.Length > 0)
+        {
+          FileHelper.ValidateImage(imageFile);
+
+          var galleryPath = await FileHelper.SaveImageToDisk(
+              imageFile,
+              "gallery",
+              $"{car.Make}-{car.Model}-gallery",
+              cancellationToken);
+
+          car.Images.Add(new CarImage
+          {
+            Url = galleryPath,
+            DisplayOrder = 0
+          });
+        }
+      }
+    }
+
     await _carRepository.AddAsync(car, cancellationToken);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -129,7 +154,7 @@ public class CarService(
     return new ReturnModel<CreatedCarViewModel>
     {
       Success = true,
-      Message = "Araç ve ana görsel başarıyla eklendi.",
+      Message = "Araç ve tüm görseller başarıyla eklendi.",
       Data = response,
       StatusCode = 201
     };
@@ -161,29 +186,22 @@ public class CarService(
   }
 
   public async Task<ReturnModel<NoData>> UpdateAsync(
-    UpdateCarViewModel request,
-    string userRole,
-    CancellationToken cancellationToken = default)
+  UpdateCarViewModel request,
+  string userRole,
+  CancellationToken cancellationToken = default)
   {
     _businessRules.UserRoleMustBeAdmin(userRole);
 
-    var existingCar = await _businessRules.GetCarIfExistAsync(
-      request.Id,
+    var existingCar = await _carRepository.GetAsync(
+      c => c.Id == request.Id,
+      include: q => q.Include(c => c.Images),
       enableTracking: true,
       cancellationToken: cancellationToken);
 
-    if (existingCar.CategoryId != request.CategoryId)
+    if (existingCar == null)
     {
-      await _businessRules.CategoryMustExistAsync(request.CategoryId, cancellationToken);
+      throw new BusinessException("Araç bulunamadı.");
     }
-
-    if (existingCar.Make != request.Make || existingCar.Model != request.Model || existingCar.Year != request.Year)
-    {
-      await _businessRules.CarMustNotBeDuplicateAsync(request.Make, request.Model, request.Year, request.Id, cancellationToken);
-    }
-
-    _businessRules.PriceMustBePositive(request.Price);
-    _businessRules.YearMustBeInValidRange(request.Year);
 
     existingCar.ImageUrl = await FileHelper.ReplaceImageOnDisk(
       request.NewMainImage,
@@ -192,15 +210,36 @@ public class CarService(
       $"{request.Make}-{request.Model}",
       cancellationToken) ?? existingCar.ImageUrl;
 
-    _mapper.UpdateEntityFromViewModel(request, existingCar);
+    if (request.DeletedImageIds != null)
+    {
+      foreach (var imageId in request.DeletedImageIds)
+      {
+        var img = existingCar.Images.FirstOrDefault(i => i.Id == imageId);
 
-    _carRepository.Update(existingCar);
+        if (img != null)
+        {
+          FileHelper.DeleteImageFromDisk(img.Url);
+          existingCar.Images.Remove(img);
+        }
+      }
+    }
+
+    if (request.NewGalleryImages != null)
+    {
+      foreach (var file in request.NewGalleryImages)
+      {
+        var path = await FileHelper.SaveImageToDisk(file, "gallery", $"{request.Make}-{request.Model}-detail", cancellationToken);
+        existingCar.Images.Add(new CarImage { Url = path });
+      }
+    }
+
+    _mapper.UpdateEntityFromViewModel(request, existingCar);
     await _unitOfWork.SaveChangesAsync(cancellationToken);
 
     return new ReturnModel<NoData>
     {
       Success = true,
-      Message = "Araç bilgileri ve görsel başarıyla güncellendi.",
+      Message = "Güncelleme başarılı.",
       StatusCode = 200
     };
   }

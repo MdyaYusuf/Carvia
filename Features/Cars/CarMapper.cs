@@ -18,8 +18,7 @@ public class CarMapper
     return cars.Select(EntityToShowcaseViewModel).ToList();
   }
 
-  public DetailedCarViewModel EntityToDetailedViewModel(
-    Car car)
+  public DetailedCarViewModel EntityToDetailedViewModel(Car car)
   {
     return new DetailedCarViewModel
     {
@@ -29,9 +28,10 @@ public class CarMapper
       Year = car.Year,
       Price = car.Price,
       Description = car.Description,
+      CategoryId = car.CategoryId,
       CategoryName = car.Category?.Name ?? "Kategorisiz",
       MainImageUrl = car.ImageUrl,
-      GalleryUrls = car.Images?.OrderBy(i => i.DisplayOrder).Select(i => i.Url) ?? new List<string>()
+      Gallery = car.Images?.OrderBy(i => i.DisplayOrder).Select(i => new GalleryImageDetails(i.Id, i.Url)) ?? new List<GalleryImageDetails>()
     };
   }
 

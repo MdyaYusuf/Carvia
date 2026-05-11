@@ -24,22 +24,24 @@ public class CarsController(
   [HttpGet]
   public async Task<IActionResult> Showcase(CancellationToken cancellationToken)
   {
-    var result = await _carService.GetAllAsync(
-      userRole: GetUserRole(),
-      cancellationToken: cancellationToken);
+    var result = await _carService.GetAllAsync(GetUserRole(), cancellationToken: cancellationToken);
+
+    await PopulateCategoriesAsync(ViewBag, cancellationToken);
 
     return View(result.Data);
   }
 
   [HttpGet]
-  public async Task<IActionResult> Details(
-    Guid id,
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Details(Guid id, CancellationToken cancellationToken)
   {
-    var result = await _carService.GetByIdAsync(
-      id,
-      userRole: GetUserRole(),
-      cancellationToken: cancellationToken);
+    var result = await _carService.GetByIdAsync(id, userRole: GetUserRole(), cancellationToken: cancellationToken);
+
+    if (result.Data == null)
+    {
+      return NotFound();
+    }
+
+    await PopulateCategoriesAsync(ViewBag, cancellationToken);
 
     return View(result.Data);
   }
@@ -111,17 +113,46 @@ public class CarsController(
   [ValidateAntiForgeryToken]
   public async Task<IActionResult> Edit(
     UpdateCarViewModel request,
-    CancellationToken cancellationToken)
+    CancellationToken ct)
   {
     if (!ModelState.IsValid)
     {
-      await PopulateCategoriesAsync(request, cancellationToken);
-      return View(request);
+      return RedirectToAction(nameof(Showcase));
     }
 
-    await _carService.UpdateAsync(request, GetUserRole(), cancellationToken);
+    var result = await _carService.UpdateAsync(request, GetUserRole(), ct);
 
-    return RedirectToAction(nameof(Details), new { id = request.Id });
+    if (result.Success)
+    {
+      return RedirectToAction(nameof(Details), new { id = request.Id });
+    }
+
+    return RedirectToAction(nameof(Showcase));
+  }
+
+  [HttpGet]
+  [Authorize(Roles = "Admin")]
+  public async Task<IActionResult> GetEditData(Guid id, CancellationToken ct)
+  {
+    var result = await _carService.GetByIdAsync(id, GetUserRole(), cancellationToken: ct);
+
+    if (result.Data == null)
+    {
+      return NotFound();
+    }
+
+    return Json(new
+    {
+      id = result.Data.Id,
+      make = result.Data.Make,
+      model = result.Data.Model,
+      year = result.Data.Year,
+      price = result.Data.Price,
+      categoryId = result.Data.CategoryId.ToString().ToLower(),
+      mainImageUrl = result.Data.MainImageUrl,
+      description = result.Data.Description,
+      existingGallery = result.Data.Gallery.Select(g => new { id = g.Id, url = g.Url })
+    });
   }
 
   [HttpPost]

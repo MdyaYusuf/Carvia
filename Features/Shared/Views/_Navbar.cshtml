@@ -14,7 +14,8 @@
     @if (User.Identity?.IsAuthenticated == true)
     {
       <a asp-controller="Users" asp-action="Profile" class="font-mono text-[11px] font-bold text-white hover:text-acid-mint tracking-[1.9px]">PROFILE</a>
-      <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
+    
+      <form asp-controller="Authentication" asp-action="Logout" method="post" class="inline">
         <button type="submit" class="font-mono text-[11px] font-bold text-error hover:opacity-80 tracking-[1.9px]">LOGOUT</button>
       </form>
     }

@@ -1,13 +1,13 @@
 ﻿@model CreateCarViewModel
 @{
-  ViewData["Title"] = "Add New Vision";
+  ViewData["Title"] = "Register Car";
 }
 
 <div class="max-w-[800px] mx-auto py-20">
   <div class="flex items-center gap-4 mb-12">
     <div class="w-1 h-8 bg-acid-mint"></div>
     <h1 class="font-display text-4xl font-extrabold text-white uppercase tracking-tighter">
-      Register New Vision
+      Register New Entry
     </h1>
   </div>
 
@@ -16,59 +16,75 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div class="flex flex-col gap-2">
-        <label asp-for="Make" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Manufacturer</label>
-        <input asp-for="Make" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 transition-colors font-body text-sm" placeholder="e.g. CARVIA" />
+        <label asp-for="Make" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Manufacturer</label>
+        <input asp-for="Make" class="bg-transparent border border-white/20 rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 transition-colors font-body text-sm" placeholder="e.g. HONDA" />
         <span asp-validation-for="Make" class="text-error font-mono text-[10px] uppercase"></span>
       </div>
 
       <div class="flex flex-col gap-2">
-        <label asp-for="Model" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Designation</label>
-        <input asp-for="Model" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 transition-colors font-body text-sm" placeholder="e.g. HONDA JAZZ" />
+        <label asp-for="Model" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Designation</label>
+        <input asp-for="Model" class="bg-transparent border border-white/20 rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 transition-colors font-body text-sm" placeholder="e.g. JAZZ RS" />
         <span asp-validation-for="Model" class="text-error font-mono text-[10px] uppercase"></span>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="flex flex-col gap-2">
-        <label asp-for="Year" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Release Year</label>
-        <input asp-for="Year" type="number" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm" />
+        <label asp-for="Year" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Model Year</label>
+        <input asp-for="Year" type="number" class="bg-transparent border border-white/20 rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm" />
       </div>
 
       <div class="flex flex-col gap-2">
-        <label asp-for="Price" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Market Value</label>
-        <input asp-for="Price" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm" />
+        <label asp-for="Price" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Market Valuation</label>
+        <input asp-for="Price" class="bg-transparent border border-white/20 rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm" />
       </div>
 
       <div class="flex flex-col gap-2">
-        <label asp-for="CategoryId" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Classification</label>
-        <select asp-for="CategoryId" asp-items="Model.Categories" class="bg-background border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm appearance-none">
-          <option value="">Select Category</option>
+        <label asp-for="CategoryId" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Classification</label>
+        <select asp-for="CategoryId" asp-items="Model.Categories" class="bg-background border border-white/20 rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm appearance-none">
+          <option value="">SELECT SEGMENT</option>
         </select>
       </div>
     </div>
 
     <div class="flex flex-col gap-2">
-      <label asp-for="Description" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Editorial Narrative</label>
-      <textarea asp-for="Description" rows="4" class="bg-transparent border border-white rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm resize-none"></textarea>
+      <label asp-for="Description" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Technical Narrative</label>
+      <textarea asp-for="Description" rows="4" class="bg-transparent border border-white/20 rounded-[2px] p-4 text-white focus:border-acid-mint focus:ring-0 font-body text-sm resize-none"></textarea>
     </div>
 
     <div class="flex flex-col gap-2">
-      <label asp-for="MainImage" class="font-mono text-[11px] font-bold text-outline uppercase tracking-[1.9px]">Hero Capture (16:9)</label>
-      <div id="image-upload-container" class="border border-dashed border-outline-variant rounded-[4px] min-h-[200px] flex flex-col items-center justify-center gap-4 hover:border-acid-mint transition-colors cursor-pointer relative overflow-hidden">
-        <input asp-for="MainImage" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-20" />
+      <label asp-for="MainImage" class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Hero Capture (16:9)</label>
+      <div class="image-upload-zone group border border-dashed border-white/20 rounded-[4px] min-h-[260px] flex flex-col items-center justify-center gap-4 hover:border-acid-mint transition-all cursor-pointer relative overflow-hidden bg-white/[0.02]">
+        <input asp-for="MainImage" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-20" id="main-image-input" />
         
-        <div id="upload-placeholder" class="flex flex-col items-center gap-4">
-          <span class="material-symbols-outlined text-4xl text-outline">add_a_photo</span>
-          <span class="font-mono text-[10px] text-outline uppercase">Upload Main Visual</span>
+        <div id="main-placeholder" class="flex flex-col items-center gap-4 group-hover:scale-105 transition-transform">
+          <span class="material-symbols-outlined text-5xl text-outline-variant group-hover:text-acid-mint">photo_camera</span>
+          <span class="font-mono text-[10px] text-outline-variant uppercase tracking-[2px]">Initialize Main Visual</span>
         </div>
 
-        <img id="image-preview" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10" />
+        <img id="main-preview" src="" class="hidden absolute inset-0 w-full h-full object-cover z-10" />
       </div>
     </div>
 
-    <div class="mt-8">
-      <button type="submit" class="w-full bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase py-6 rounded-full hover:bg-acid-mint hover:text-background transition-colors tracking-[1.5px]">
-        Commit Vision to Registry
+    <div class="flex flex-col gap-2 mt-4">
+      <label class="font-mono text-[11px] font-bold text-outline-variant uppercase tracking-[1.9px]">Gallery Collection (Supplementary)</label>
+      <div class="gallery-upload-zone group border border-dashed border-white/20 rounded-[4px] min-h-[120px] flex flex-col items-center justify-center gap-4 hover:border-acid-mint transition-all cursor-pointer relative bg-white/[0.02]">
+        <input type="file" id="gallery-picker" accept="image/*" multiple class="absolute inset-0 opacity-0 cursor-pointer z-20" />
+        
+        <div class="flex items-center gap-4 py-8">
+          <span class="material-symbols-outlined text-3xl text-outline-variant group-hover:text-acid-mint">collections</span>
+          <span class="font-mono text-[10px] text-outline-variant uppercase tracking-[2px]">Add Supplementary Angles</span>
+        </div>
+      </div>
+
+      <input asp-for="GalleryImages" type="file" multiple class="hidden" id="final-gallery-input" />
+
+      <div id="gallery-preview-container" class="grid grid-cols-4 gap-4 mt-4 hidden"></div>
+    </div>
+
+    <div class="mt-12">
+      <button type="submit" class="w-full bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase py-8 rounded-full hover:bg-acid-mint hover:text-background transition-all tracking-[2.5px] shadow-[0_0_40px_rgba(60,255,208,0.1)]">
+        Commit Data to Registry
       </button>
     </div>
   </form>
@@ -76,16 +92,62 @@
 
 @section Scripts {
   <script>
-    document.querySelector('input[type="file"]').onchange = evt => {
+    document.getElementById('main-image-input').onchange = evt => {
       const [file] = evt.target.files;
       if (file) {
-        const preview = document.getElementById('image-preview');
-        const placeholder = document.getElementById('upload-placeholder');
-                
+        const preview = document.getElementById('main-preview');
+        const placeholder = document.getElementById('main-placeholder');
         preview.src = URL.createObjectURL(file);
         preview.classList.remove('hidden');
         placeholder.classList.add('hidden');
       }
+    };
+
+    let galleryQueue = [];
+
+    document.getElementById('gallery-picker').onchange = function() {
+        const newFiles = Array.from(this.files);
+        galleryQueue = [...galleryQueue, ...newFiles];
+        renderGallery();
+        this.value = "";
+    };
+
+    function renderGallery() {
+        const container = document.getElementById('gallery-preview-container');
+        container.innerHTML = '';
+        
+        if (galleryQueue.length > 0) {
+          container.classList.remove('hidden');
+          galleryQueue.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = "relative aspect-square rounded-[2px] overflow-hidden border border-white/10 p-1 group bg-white/[0.05]";
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="w-full h-full object-cover" />
+                    <button type="button" onclick="removeFromQueue(${index})" class="absolute top-1 right-1 bg-error text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="material-symbols-outlined text-[12px]">close</span>
+                    </button>
+                `;
+                container.appendChild(div);
+            }
+            reader.readAsDataURL(file);
+          });
+        } else {
+          container.classList.add('hidden');
+        }
+        syncToFinalInput();
+    }
+
+    function removeFromQueue(index) {
+        galleryQueue.splice(index, 1);
+        renderGallery();
+    }
+
+    function syncToFinalInput() {
+        const dataTransfer = new DataTransfer();
+        galleryQueue.forEach(file => dataTransfer.items.add(file));
+        document.getElementById('final-gallery-input').files = dataTransfer.files;
     }
   </script>
 }
