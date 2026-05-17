@@ -10,4 +10,12 @@ public class SharedController : BaseController
   {
     return View();
   }
+
+  [HttpGet("legal")]
+  public IActionResult Legal()
+  {
+    ViewData["IsHeroPage"] = false;
+
+    return View("~/Features/Shared/Views/Legal.cshtml");
+  }
 }

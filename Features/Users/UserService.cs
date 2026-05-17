@@ -1,6 +1,7 @@
 ﻿using Carvia.Core.Models;
 using Carvia.Core.Persistence;
 using Carvia.Core.Utilities.Files;
+using Carvia.Core.Utilities.Security;
 using Carvia.Features.Cars;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -144,14 +145,17 @@ public class UserService(
       await _businessRules.UsernameMustBeUniqueAsync(request.Username, request.Id, cancellationToken);
     }
 
-    existingUser.ProfileImageUrl = await FileHelper.ReplaceImageOnDisk(
-      request.NewProfileImage,
-      existingUser.ProfileImageUrl,
-      "users",
-      request.Username,
-      cancellationToken) ?? existingUser.ProfileImageUrl;
+    _businessRules.ValidatePasswordChange(existingUser, request.CurrentPassword, request.NewPassword);
 
-    _mapper.UpdateEntityFromViewModel(request, existingUser);
+    if (!string.IsNullOrWhiteSpace(request.NewPassword))
+    {
+      HashingHelper.CreatePasswordHash(request.NewPassword, out string newHash, out string newKey);
+      existingUser.PasswordHash = newHash;
+      existingUser.PasswordKey = newKey;
+    }
+
+    existingUser.Username = request.Username;
+    existingUser.Email = request.Email;
 
     _userRepository.Update(existingUser);
     await _unitOfWork.SaveChangesAsync(cancellationToken);

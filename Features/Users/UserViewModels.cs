@@ -29,12 +29,22 @@ public class UpdateUserViewModel
 {
   [Required]
   public Guid Id { get; set; }
-  [Required, StringLength(50)]
+  [Required]
+  [StringLength(50, MinimumLength = 3)]
   public string Username { get; set; } = null!;
-  [Required, EmailAddress, StringLength(150)]
+  [Required]
+  [EmailAddress]
+  [StringLength(150)]
   public string Email { get; set; } = null!;
-  [StringLength(1000)]
-  public string? Bio { get; set; }
-  public string? ExistingProfileImageUrl { get; set; }
-  public IFormFile? NewProfileImage { get; set; }
+  [DataType(DataType.Password)]
+  [Display(Name = "Current Password")]
+  public string? CurrentPassword { get; set; }
+  [DataType(DataType.Password)]
+  [StringLength(100, MinimumLength = 12, ErrorMessage = "New password must be at least 12 characters.")]
+  [Display(Name = "New Password")]
+  public string? NewPassword { get; set; }
+  [DataType(DataType.Password)]
+  [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+  [Display(Name = "Confirm New Password")]
+  public string? ConfirmNewPassword { get; set; }
 }

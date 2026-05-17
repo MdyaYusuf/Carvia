@@ -13,15 +13,21 @@
     </div>
   </aside>
 
-  <div class="flex-1 space-y-12 pb-20">
-    <div class="flex items-center justify-between border-b border-outline-variant pb-4 mb-8">
-      <div class="flex space-x-6">
-        <button class="font-label-mono text-acid-mint uppercase">All Models</button>
+  <div class="flex-1 space-y-12 pb-20 pt-20">
+
+    <div class="border-b border-outline-variant/30 pb-6 mb-12 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 text-left">
+      <div>
+        <h2 class="font-mono text-[11px] font-bold text-acid-mint uppercase tracking-[1.9px] mb-2">
+          Global Live Catalog
+        </h2>
+        <h1 class="font-display text-5xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none">
+          Car Showcase
+        </h1>
       </div>
 
       @if (User.IsInRole("Admin"))
       {
-        <a asp-action="Create" class="btn-carvia-primary py-2 px-6 flex items-center gap-2">
+        <a asp-action="Create" class="btn-carvia-primary py-2 px-6 flex items-center gap-2 whitespace-nowrap self-start sm:self-auto mb-1">
           <span class="material-symbols-outlined text-base">add</span>
           ADD NEW CAR
         </a>
@@ -58,20 +64,28 @@
                 <div class="px-2">
                   <p class="font-label-mono text-on-surface-variant mb-2">@car.Year • @car.Make</p>
                   <h2 class="font-display text-3xl font-extrabold text-white group-hover:text-acid-mint transition-colors mb-6 uppercase">@car.Model</h2>
-                  
+
                   <div class="flex items-center justify-between">
                     <span class="font-label-mono text-acid-mint flex items-center gap-2">
                       VIEW SPECS <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
                     </span>
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                      <button type="button"
-                              onclick="event.stopPropagation(); openEditModal('@car.Id')"
-                              class="font-label-mono text-[10px] text-white/40 hover:text-acid-mint uppercase tracking-[2px] transition-colors relative z-30">
-                        Edit Entry
-                      </button>
-                    }
+                    <div class="flex items-center gap-4">
+                      <a asp-controller="CuratorItems" asp-action="Create" asp-route-carId="@car.Id"
+                         onclick="event.stopPropagation();"
+                         class="font-label-mono text-[10px] text-white/60 hover:text-acid-mint uppercase tracking-[2px] transition-colors relative z-30">
+                        + Curate Vision
+                      </a>
+
+                      @if (User.IsInRole("Admin"))
+                      {
+                        <button type="button"
+                                onclick="event.stopPropagation(); openEditModal('@car.Id')"
+                                class="font-label-mono text-[10px] text-white/60 hover:text-acid-mint uppercase tracking-[2px] transition-colors relative z-30">
+                          Edit Entry
+                        </button>
+                      }
+                    </div>
                   </div>
                 </div>
               </div>

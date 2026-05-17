@@ -1,18 +1,17 @@
-﻿<!-- Footer -->
-<footer class="bg-surface-container-lowest text-acid-mint font-mono text-[10px] uppercase tracking-[1.9px] w-full border-t border-outline-variant flex flex-col md:flex-row justify-between items-center px-12 py-16">
+﻿<footer class="bg-surface-container-lowest text-acid-mint font-mono text-[10px] uppercase tracking-[1.9px] w-full border-t border-outline-variant flex flex-col md:flex-row justify-between items-center px-12 py-16">
   <div class="flex flex-col gap-2">
     <div class="text-2xl font-black text-white font-display">CARVIA</div>
     <p class="text-neutral-500 normal-case tracking-normal font-body font-light">Bringing visions into reality.</p>
   </div>
 
   <div class="flex flex-wrap justify-center gap-8 my-8 md:my-0">
-    <a class="text-neutral-500 hover:text-acid-mint transition-colors" href="#">PRIVACY</a>
-    <a class="text-neutral-500 hover:text-acid-mint transition-colors" href="#">LEGAL</a>
-    <a class="text-neutral-500 hover:text-acid-mint transition-colors" href="#">PRESS</a>
+    <a asp-controller="Shared" asp-action="Legal" class="text-white hover:text-acid-mint transition-colors tracking-widest">
+      LEGAL DISCLOSURES
+    </a>
   </div>
 
-  <div class="text-neutral-500 text-center md:text-right">
-    <p>©@DateTime.Now.Year CARVIA PROJECT</p>
+  <div class="text-neutral-500 text-center md:text-right font-mono">
+    <p>&copy; @DateTime.Now.Year CARVIA PROJECT</p>
     <p class="mt-1 text-[8px] opacity-50">DESIGNED FOR HIGH-OCTANE LUXURY</p>
   </div>
 </footer>

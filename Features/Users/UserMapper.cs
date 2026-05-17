@@ -49,6 +49,5 @@ public class UserMapper
   {
     user.Username = viewModel.Username;
     user.Email = viewModel.Email;
-    user.Bio = viewModel.Bio;
   }
 }

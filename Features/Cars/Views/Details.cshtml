@@ -11,7 +11,7 @@
          class="w-full h-full object-cover object-center border border-outline-variant rounded" />
     <div class="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-90"></div>
   </div>
-    
+
   <div class="relative z-10 flex flex-col gap-6 max-w-[800px]">
     <div class="flex items-center gap-4">
       <div class="w-1 h-8 bg-acid-mint"></div>
@@ -56,22 +56,27 @@
   </div>
 </section>
 
-@if (User.IsInRole("Admin"))
-{
-  <section class="w-full px-12 py-10 flex justify-center border-t border-b border-outline-variant/10">
+<section class="w-full px-12 py-10 flex justify-center gap-6 border-t border-b border-outline-variant/10">
+  @if (User.IsInRole("Admin"))
+  {
     <button onclick="openEditModal('@Model.Id')"
             class="bg-transparent border border-acid-mint text-acid-mint font-mono text-[12px] font-bold uppercase px-16 py-5 rounded-full hover:bg-acid-mint hover:text-background transition-all tracking-[2px]">
       Edit Car Specifications
     </button>
-  </section>
-}
+  }
+
+  <a asp-controller="CuratorItems" asp-action="Create" asp-route-carId="@Model.Id"
+     class="bg-acid-mint text-background border border-acid-mint font-mono text-[12px] font-bold uppercase px-16 py-5 rounded-full hover:bg-transparent hover:text-acid-mint transition-all tracking-[2px]">
+    Collect to Curator Mode
+  </a>
+</section>
 
 <section class="w-full px-12 py-20 max-w-[1440px] mx-auto">
   <div class="flex items-center gap-4 mb-12">
     <div class="w-1 h-6 bg-acid-mint"></div>
     <h2 class="font-display text-3xl font-bold text-white uppercase tracking-tight">Gallery</h2>
   </div>
-    
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
     @foreach (var item in Model.Gallery)
     {

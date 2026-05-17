@@ -1,21 +1,24 @@
-﻿<!-- TopAppBar -->
-<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md flex justify-between items-center px-12 py-8 border-b border-outline-variant/30">
+﻿<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md flex justify-between items-center px-12 py-8 border-b border-outline-variant/30">
   <a asp-controller="Cars" asp-action="Index" class="text-4xl font-black text-white tracking-tighter hover:text-acid-mint transition-colors font-display">
     CARVIA
   </a>
 
   <div class="hidden md:flex space-x-8">
     <a class="font-mono text-[11px] font-bold text-white opacity-80 hover:opacity-100 hover:text-acid-mint transition-all tracking-[1.9px]" asp-controller="Cars" asp-action="Showcase">SHOWCASE</a>
-    <a class="font-mono text-[11px] font-bold text-white opacity-80 hover:opacity-100 hover:text-acid-mint transition-all tracking-[1.9px]" asp-controller="Cars" asp-action="Index">TIMELINE</a>
-    <a class="font-mono text-[11px] font-bold text-white opacity-80 hover:opacity-100 hover:text-acid-mint transition-all tracking-[1.9px]" href="#">JOURNAL</a>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+      <a class="font-mono text-[11px] font-bold text-white opacity-80 hover:opacity-100 hover:text-acid-mint transition-all tracking-[1.9px]" asp-controller="CuratorItems" asp-action="Index">CURATOR MODE</a>
+    }
   </div>
 
   <div class="flex items-center gap-6">
     @if (User.Identity?.IsAuthenticated == true)
     {
       <a asp-controller="Users" asp-action="Profile" class="font-mono text-[11px] font-bold text-white hover:text-acid-mint tracking-[1.9px]">PROFILE</a>
-    
-      <form asp-controller="Authentication" asp-action="Logout" method="post" class="inline">
+
+      <form asp-controller="Authentication" asp-action="Logout" method="post" class="contents">
+        @Html.AntiForgeryToken()
         <button type="submit" class="font-mono text-[11px] font-bold text-error hover:opacity-80 tracking-[1.9px]">LOGOUT</button>
       </form>
     }

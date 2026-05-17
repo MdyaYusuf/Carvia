@@ -1,4 +1,5 @@
-﻿using Carvia.Infrastructure.Controllers;
+﻿using Carvia.Core.Exceptions;
+using Carvia.Infrastructure.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,8 +35,7 @@ public class UsersController(
 
   [HttpGet]
   [Authorize]
-  public async Task<IActionResult> Edit(
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Edit(CancellationToken cancellationToken)
   {
     var result = await _userService.GetByIdAsync(
       id: GetUserId(),
@@ -46,9 +46,7 @@ public class UsersController(
     {
       Id = result.Data!.Id,
       Username = result.Data.Username,
-      Email = result.Data.Email,
-      Bio = result.Data.Bio,
-      ExistingProfileImageUrl = result.Data.ProfileImageUrl
+      Email = result.Data.Email
     };
 
     return View(viewModel);
@@ -57,9 +55,7 @@ public class UsersController(
   [HttpPost]
   [Authorize]
   [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Edit(
-    UpdateUserViewModel request,
-    CancellationToken cancellationToken)
+  public async Task<IActionResult> Edit(UpdateUserViewModel request, CancellationToken cancellationToken)
   {
     if (!ModelState.IsValid)
     {
@@ -71,9 +67,25 @@ public class UsersController(
       return Forbid();
     }
 
-    await _userService.UpdateAsync(request, GetUserRole(), cancellationToken);
+    try
+    {
+      var result = await _userService.UpdateAsync(request, GetUserRole(), cancellationToken);
 
-    return RedirectToAction(nameof(Profile));
+      if (!result.Success)
+      {
+        ModelState.AddModelError(string.Empty, result.Message);
+
+        return View(request);
+      }
+
+      return RedirectToAction(nameof(Profile));
+    }
+    catch (BusinessException ex)
+    {
+      ModelState.AddModelError(string.Empty, ex.Message);
+
+      return View(request);
+    }
   }
 
   [HttpPost]

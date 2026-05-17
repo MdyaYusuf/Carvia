@@ -1,4 +1,5 @@
 ﻿using Carvia.Core.Exceptions;
+using Carvia.Core.Utilities.Security;
 
 namespace Carvia.Features.Users;
 
@@ -52,6 +53,29 @@ public class UserBusinessRules(IUserRepository _userRepository)
     if (!user.IsActive)
     {
       throw new BusinessException("Kullanıcı hesabı pasif durumdadır.");
+    }
+  }
+
+  public void ValidatePasswordChange(User user, string? currentPassword, string? newPassword)
+  {
+    if (string.IsNullOrWhiteSpace(newPassword))
+    {
+      return;
+    }
+
+    if (string.IsNullOrWhiteSpace(currentPassword))
+    {
+      throw new BusinessException("Şifrenizi değiştirmek için mevcut şifrenizi girmeniz gerekmektedir.");
+    }
+
+    bool isPasswordVerified = HashingHelper.VerifyPasswordHash(
+      currentPassword,
+      user.PasswordHash,
+      user.PasswordKey);
+
+    if (!isPasswordVerified)
+    {
+      throw new BusinessException("Girdiğiniz mevcut şifre hatalı.");
     }
   }
 }
